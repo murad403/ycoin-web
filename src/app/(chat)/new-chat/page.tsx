@@ -57,7 +57,7 @@ const NewChatPage = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-black relative overflow-hidden justify-between">
+    <div className="flex-1 flex flex-col h-full relative overflow-hidden justify-between">
       
       {/* 1. Empty State: Show Logo + chatshowcase.png Image */}
       {messages.length === 0 ? (
