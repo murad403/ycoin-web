@@ -33,7 +33,7 @@ const Philosophy = () => {
     ]
 
     return (
-        <section id="philosophy" className="w-full relative overflow-hidden">
+        <section id="philosophy" className="w-full relative overflow-hidden py-16 md:py-24">
 
             {/* Background glow */}
             <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-100 h-100 bg-button-color/5 blur-[100px] rounded-full -z-10" />
@@ -63,7 +63,7 @@ const Philosophy = () => {
                         return (
                             <div
                                 key={idx}
-                                className="bg-[#090D14] border hover:border-border-color rounded-2xl p-6 md:p-8 flex flex-col items-start text-left shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-all duration-200"
+                                className="bg-[#090D14] border border-border-color hover:border-button-color rounded-2xl p-6 md:p-8 flex flex-col items-start text-left shadow-[0_4px_25px_rgba(0,0,0,0.4)] transition-all duration-200"
                             >
                                 {/* Top row with icon & pill */}
                                 <div className="flex justify-between items-center w-full mb-6">

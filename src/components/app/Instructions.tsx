@@ -4,7 +4,7 @@ import instructionsImg from '@/assets/images/instructions.png'
 
 const Instructions = () => {
     return (
-        <section className="w-full bg-black relative overflow-hidden">
+        <section className="w-full bg-black relative overflow-hidden py-16 md:py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Glow background behind the showcase */}

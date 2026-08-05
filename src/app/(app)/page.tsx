@@ -12,12 +12,10 @@ const page = () => {
     <div>
       <Navbar />
       <Hero />
-      <div className='space-y-16 md:space-y-24'>
-        <Instructions />
-        <Philosophy />
-        <Roadmap />
-        <Culture />
-      </div>
+      <Instructions />
+      <Philosophy />
+      <Roadmap />
+      <Culture />
       <Footer />
     </div>
   )
