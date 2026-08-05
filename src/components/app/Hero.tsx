@@ -2,13 +2,12 @@
 import React from 'react'
 import Image from 'next/image'
 import heroImg from '@/assets/images/hero.png'
-import { FiBell, FiSend, FiShield, FiCpu } from 'react-icons/fi'
+import { FiBell, FiSend, FiShield } from 'react-icons/fi'
 import { FaBitcoin, FaXmark } from 'react-icons/fa6'
 import { useRouter } from 'next/navigation'
 
 const Hero = () => {
     const router = useRouter()
-
     const handleGetStarted = (e: React.FormEvent) => {
         e.preventDefault()
         router.push('/auth/sign-up')
