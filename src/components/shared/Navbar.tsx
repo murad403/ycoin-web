@@ -69,7 +69,7 @@ const Navbar = () => {
             </div>
             {/* Talk to AI Button */}
             <Link
-              href="/auth/sign-in"
+              href="/new-chat"
               className="bg-button-color hover:bg-button-color/90 text-white text-xs font-bold px-5 py-2.5 rounded-full flex items-center gap-1.5 shadow-[0_0_15px_var(--color-dropshadow-color)] transition-all duration-200 select-none active:scale-[0.98]"
             >
               <FiMessageSquare className="w-3.5 h-3.5" />
