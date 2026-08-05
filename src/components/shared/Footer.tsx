@@ -5,7 +5,35 @@ import logoImg from '@/assets/images/logo.png'
 import { FiGithub, FiGlobe } from 'react-icons/fi'
 import { FaDiscord, FaXTwitter } from 'react-icons/fa6'
 
+type TSocialLink = {
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  target?: string
+}
+
 const Footer = () => {
+  const socialLinks: TSocialLink[] = [
+    {
+      href: "https://x.com",
+      icon: FaXTwitter,
+      target: "_blank"
+    },
+    {
+      href: "https://discord.com",
+      icon: FaDiscord,
+      target: "_blank"
+    },
+    {
+      href: "https://github.com",
+      icon: FiGithub,
+      target: "_blank"
+    },
+    {
+      href: "#nodes",
+      icon: FiGlobe
+    }
+  ]
+
   return (
     <footer className="w-full bg-[#030712] border-t border-zinc-900 text-description">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -71,33 +99,19 @@ const Footer = () => {
             </p>
             {/* Boxed Social Icons */}
             <div className="flex items-center gap-3 mt-1">
-              <Link
-                href="https://x.com"
-                target="_blank"
-                className="w-10 h-10 rounded-xl border border-border-color bg-[#020813] flex items-center justify-center text-description hover:text-white hover:border-border-color hover:scale-105 active:scale-[0.98] transition-all duration-150"
-              >
-                <FaXTwitter className="w-4.5 h-4.5 text-heading" />
-              </Link>
-              <Link
-                href="https://discord.com"
-                target="_blank"
-                className="w-10 h-10 rounded-xl border border-border-color bg-[#020813] flex items-center justify-center text-description hover:text-white hover:border-border-color hover:scale-105 active:scale-[0.98] transition-all duration-150"
-              >
-                <FaDiscord className="w-4.5 h-4.5 text-heading" />
-              </Link>
-              <Link
-                href="https://github.com"
-                target="_blank"
-                className="w-10 h-10 rounded-xl border border-border-color bg-[#020813] flex items-center justify-center text-description hover:text-white hover:border-border-color hover:scale-105 active:scale-[0.98] transition-all duration-150"
-              >
-                <FiGithub className="w-4.5 h-4.5 text-heading" />
-              </Link>
-              <Link
-                href="#nodes"
-                className="w-10 h-10 rounded-xl border border-border-color bg-[#020813] flex items-center justify-center text-description hover:text-white hover:border-border-color hover:scale-105 active:scale-[0.98] transition-all duration-150"
-              >
-                <FiGlobe className="w-4.5 h-4.5 text-heading" />
-              </Link>
+              {socialLinks.map((link, idx) => {
+                const Icon = link.icon
+                return (
+                  <Link
+                    key={idx}
+                    href={link.href}
+                    target={link.target}
+                    className="w-10 h-10 rounded-xl border border-border-color bg-[#020813] flex items-center justify-center text-description hover:text-white hover:border-border-color hover:scale-105 active:scale-[0.98] transition-all duration-150"
+                  >
+                    <Icon className="w-4.5 h-4.5 text-heading" />
+                  </Link>
+                )
+              })}
             </div>
           </div>
 
