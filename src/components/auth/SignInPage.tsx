@@ -8,8 +8,10 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { signInSchema, TSignInInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
+import { useRouter } from 'next/navigation'
 
 const SignInPage = () => {
+    const router = useRouter();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
@@ -20,7 +22,7 @@ const SignInPage = () => {
 
     const onSubmit = async (data: TSignInInput) => {
         console.log('Sign In Data:', data)
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        router.push("/")
     }
 
     return (

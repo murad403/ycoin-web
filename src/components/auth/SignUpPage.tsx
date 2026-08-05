@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi'
@@ -8,8 +7,10 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { signUpSchema, TSignUpInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
+import { useRouter } from 'next/navigation'
 
 const SignUpPage = () => {
+    const router = useRouter();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -22,7 +23,7 @@ const SignUpPage = () => {
     const onSubmit = async (data: TSignUpInput) => {
         // Simulate API call
         console.log('Sign Up Data:', data)
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        router.push("/auth/verify-otp")
     }
 
     return (
