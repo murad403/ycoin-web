@@ -8,9 +8,11 @@ import { Button } from '../ui/button'
 import { signUpSchema, TSignUpInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const SignUpPage = () => {
     const router = useRouter();
+    const { t } = useLanguage()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -28,8 +30,8 @@ const SignUpPage = () => {
 
     return (
         <AuthWrapper
-            title="Create Sovereign Account"
-            description="Bitcoin Native Sovereign AI Platform Authentication"
+            title={t.auth.signUpTitle}
+            description={t.auth.signUpDesc}
         >
             {/* Tab Switcher */}
             <TabSwitcher/>
@@ -39,9 +41,9 @@ const SignUpPage = () => {
                 {/* Display Name Field */}
                 <Input
                     {...register('displayName')}
-                    label="Display Name"
+                    label={t.auth.fullNameLabel}
                     type="text"
-                    placeholder="Satoshi Nakamoto"
+                    placeholder={t.auth.fullNamePlaceholder}
                     icon={FiUser}
                     error={errors.displayName?.message}
                 />
@@ -49,9 +51,9 @@ const SignUpPage = () => {
                 {/* Email Field */}
                 <Input
                     {...register('email')}
-                    label="Email Address"
+                    label={t.auth.emailLabel}
                     type="email"
-                    placeholder="your.email@domain.com"
+                    placeholder={t.auth.emailPlaceholder}
                     icon={FiMail}
                     error={errors.email?.message}
                 />
@@ -59,16 +61,16 @@ const SignUpPage = () => {
                 {/* Password Field */}
                 <Input
                     {...register('password')}
-                    label="Password"
+                    label={t.auth.passwordLabel}
                     type="password"
-                    placeholder="..........."
+                    placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.password?.message}
                 />
 
                 {/* Submit Button */}
                 <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
-                    Verify Email & Sign Up <FiArrowRight className="w-4 h-4" />
+                    {t.auth.signUpBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
             </form>
         </AuthWrapper>

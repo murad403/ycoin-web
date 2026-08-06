@@ -1,42 +1,45 @@
 'use client'
 import { FiCheck, FiClock, FiCompass } from 'react-icons/fi'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const Roadmap = () => {
+    const { t } = useLanguage()
+
     const steps = [
         {
-            quarter: '2024 Q2 - Q3',
-            status: 'Completed',
+            quarter: t.roadmap.steps[0].quarter,
+            status: t.roadmap.statusCompleted,
             isActive: true,
             isCompleted: true,
-            title: 'Genesis & AI Sentinel Layer',
-            description: 'Launch of YCOIN testnet, deployment of initial Bitcoin hash-anchored state proofs, and Satoshi AI intelligence interface initialization.',
+            title: t.roadmap.steps[0].title,
+            description: t.roadmap.steps[0].description,
             position: 'right'
         },
         {
-            quarter: '2024 Q4 - 2025 Q1',
-            status: 'In Progress',
+            quarter: t.roadmap.steps[1].quarter,
+            status: t.roadmap.statusInProgress,
             isActive: true,
             isCompleted: false,
-            title: 'Autonomous AI Node Network',
-            description: 'Deployment of decentralized node cluster performing zero-knowledge AI inference with settlement directly on Bitcoin Layer-1.',
+            title: t.roadmap.steps[1].title,
+            description: t.roadmap.steps[1].description,
             position: 'left'
         },
         {
-            quarter: '2025 Q2 - Q4',
-            status: 'Upcoming',
+            quarter: t.roadmap.steps[2].quarter,
+            status: t.roadmap.statusUpcoming,
             isActive: false,
             isCompleted: false,
-            title: 'Sovereign Layer-2 Rollout',
-            description: 'Expansion of YCOIN L2 execution environment, enabling high-frequency AI agent micro-transactions with Taproot and BitVM integration.',
+            title: t.roadmap.steps[2].title,
+            description: t.roadmap.steps[2].description,
             position: 'right'
         },
         {
-            quarter: '2026+',
-            status: 'Vision 2026+',
+            quarter: t.roadmap.steps[3].quarter,
+            status: t.roadmap.statusVision,
             isActive: false,
             isCompleted: false,
-            title: 'Global Sovereign AI Matrix',
-            description: 'Full autonomy of the self-evolving YCOIN core network, creating an unstoppable global intelligence layer for sovereign individuals.',
+            title: t.roadmap.steps[3].title,
+            description: t.roadmap.steps[3].description,
             position: 'left'
         }
     ]
@@ -53,16 +56,16 @@ const Roadmap = () => {
                 <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3]/5 border border-[#0071E3]/35 rounded-full mb-4 select-none shadow-[0_0_15px_rgba(0,113,227,0.05)]">
                     <FiCompass className="w-3 h-3 text-heading" />
                     <span className="text-[10px] font-mono tracking-wider text-heading uppercase font-bold">
-                        Development Horizon
+                        {t.roadmap.badge}
                     </span>
                 </div>
 
                 {/* Title & Description */}
                 <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-2">
-                    Roadmap
+                    {t.roadmap.title}
                 </h2>
                 <p className="text-description text-base sm:text-lg leading-relaxed max-w-xl mb-14">
-                    Architecting the convergence of Bitcoin and artificial intelligence.
+                    {t.roadmap.subtitle}
                 </p>
 
                 {/* Timeline Container */}

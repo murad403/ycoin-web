@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { FiKey, FiLock, FiCpu, FiCheckCircle } from 'react-icons/fi'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 type TPhilosophyCard = {
     icon: React.ComponentType<{ className?: string }>
@@ -11,24 +12,26 @@ type TPhilosophyCard = {
 }
 
 const Philosophy = () => {
+    const { t } = useLanguage()
+
     const cards: TPhilosophyCard[] = [
         {
             icon: FiKey,
-            tag: 'SOVEREIGN IDENTITY',
-            title: 'Individual Sovereignty',
-            description: 'True freedom requires control over your capital and your intelligence. YCOIN returns complete ownership of data, memory, and value back to the individual without corporate gatekeepers.'
+            tag: t.philosophy.card1.tag,
+            title: t.philosophy.card1.title,
+            description: t.philosophy.card1.description
         },
         {
             icon: FiLock,
-            tag: 'PROOF-OF-WORK',
-            title: 'Proof-of-Work Foundation',
-            description: "Bitcoin is the ultimate anchor of truth in the digital universe. YCOIN leverages Bitcoin's unmatched energy-backed security to validate and seal autonomous AI state execution."
+            tag: t.philosophy.card2.tag,
+            title: t.philosophy.card2.title,
+            description: t.philosophy.card2.description
         },
         {
             icon: FiCpu,
-            tag: 'AUTONOMOUS CODE',
-            title: 'Autonomous Code Supremacy',
-            description: 'Human consensus is fragile and prone to censorship. By delegating complex coordination to cryptographic AI models, we establish immutable governance driven by logic and code.'
+            tag: t.philosophy.card3.tag,
+            title: t.philosophy.card3.title,
+            description: t.philosophy.card3.description
         }
     ]
 
@@ -44,16 +47,16 @@ const Philosophy = () => {
                 <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3]/5 border border-[#0071E3]/35 rounded-full mb-4 select-none shadow-[0_0_15px_rgba(0,113,227,0.05)]">
                     <FiCpu className="w-3 h-3 text-heading" />
                     <span className="text-[10px] font-mono tracking-wider text-heading uppercase font-bold">
-                        Core Principles
+                        {t.philosophy.badge}
                     </span>
                 </div>
 
                 {/* Title & Description */}
                 <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-2">
-                    Philosophy
+                    {t.philosophy.title}
                 </h2>
                 <p className="text-description text-base sm:text-lg leading-relaxed max-w-xl mb-14">
-                    Uncompromising decentralization meets self-sovereign intelligence.
+                    {t.philosophy.subtitle}
                 </p>
 
                 {/* Cards Grid */}
@@ -86,7 +89,7 @@ const Philosophy = () => {
                                 {/* Divider line & verified tag */}
                                 <div className="w-full border-t border-zinc-900 pt-4 flex items-center gap-1.5 text-heading font-mono text-[10px] font-bold tracking-wider select-none uppercase">
                                     <FiCheckCircle className="w-3.5 h-3.5" />
-                                    <span>Verified by Bitcoin L1</span>
+                                    <span>{t.philosophy.verifiedBy}</span>
                                 </div>
                             </div>
                         )

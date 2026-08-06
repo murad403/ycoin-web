@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const TabSwitcher = () => {
     const pathname = usePathname()
+    const { t } = useLanguage()
     const isSignIn = pathname === '/auth/sign-in'
 
     return (
@@ -17,7 +19,7 @@ const TabSwitcher = () => {
                         : 'text-zinc-400 hover:text-white font-semibold'
                 } text-sm py-2.5 px-4 rounded-md transition-all duration-200 flex items-center justify-center select-none`}
             >
-                Sign In
+                {t.auth.signInTab}
             </Link>
             <Link
                 href="/auth/sign-up"
@@ -27,7 +29,7 @@ const TabSwitcher = () => {
                         : 'text-zinc-400 hover:text-white font-semibold'
                 } text-sm py-2.5 px-4 rounded-md transition-all duration-200 flex items-center justify-center select-none`}
             >
-                Sign Up
+                {t.auth.signUpTab}
             </Link>
         </div>
     )

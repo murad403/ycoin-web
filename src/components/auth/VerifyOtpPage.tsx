@@ -9,10 +9,13 @@ import { Button } from '../ui/button'
 import { verifyOtpSchema, TVerifyOtpInput } from '@/validation/auth.validation'
 import StepIndicator from '../shared/StepIndicator'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const VerifyOtpPage = () => {
     const [timer, setTimer] = useState(46);
     const router = useRouter();
+    const { t } = useLanguage()
+
     useEffect(() => {
         if (timer > 0) {
             const interval = setInterval(() => {
@@ -36,8 +39,8 @@ const VerifyOtpPage = () => {
 
     return (
         <AuthWrapper
-            title="Reset Password"
-            description="A 6-digit code was sent to haqueahsan1325@gmail.com. Please enter it below."
+            title={t.auth.verifyOtpTitle}
+            description={t.auth.verifyOtpDesc}
         >
             {/* Steps Indicator */}
             <StepIndicator step={2} />
@@ -47,7 +50,7 @@ const VerifyOtpPage = () => {
                 {/* OTP Input with Timer */}
                 <div className="w-full text-left">
                     <span className="text-[10px] font-mono tracking-widest text-description uppercase font-semibold block mb-1.5 px-1">
-                        6-Digit Email Verification Code (OTP)
+                        {t.auth.verifyOtpTitle}
                     </span>
                     <div className="flex gap-3 items-center w-full">
                         <div className="relative flex-1 flex items-center">
@@ -57,7 +60,7 @@ const VerifyOtpPage = () => {
                             <input
                                 {...register('otp')}
                                 type="text"
-                                placeholder="Enter 6-digit code"
+                                placeholder={t.auth.verifyOtpTitle}
                                 className={`w-full bg-[#020813] text-white border ${errors.otp ? 'border-red-500/80 focus:border-red-500' : 'border-zinc-800 focus:border-[#0071E3]'
                                     } rounded-lg pl-10 pr-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#0071E3]/20 transition-all duration-200`}
                             />
@@ -80,7 +83,7 @@ const VerifyOtpPage = () => {
 
                 {/* Submit Button */}
                 <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
-                    Verify & Set Password <FiArrowRight className="w-4 h-4" />
+                    {t.auth.verifyBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 
                 {/* Back Link */}
@@ -88,7 +91,7 @@ const VerifyOtpPage = () => {
                     href="/auth/sign-in"
                     className="text-zinc-400 hover:text-white text-xs font-semibold mt-2 transition-all duration-200 select-none block text-center"
                 >
-                    Back to Sign In
+                    {t.auth.signInTab}
                 </Link>
             </form>
         </AuthWrapper>

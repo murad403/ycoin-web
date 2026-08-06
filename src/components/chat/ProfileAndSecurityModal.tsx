@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import { FiX,FiUser,FiLock,FiCamera,FiUpload,FiMail,FiCheckCircle,FiSave,FiKey } from 'react-icons/fi'
+import { FiX, FiUser, FiLock, FiCamera, FiUpload, FiMail, FiCheckCircle, FiSave, FiKey } from 'react-icons/fi'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 interface ProfileAndSecurityModalProps {
     isOpen: boolean
@@ -8,6 +9,7 @@ interface ProfileAndSecurityModalProps {
 }
 
 const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpen, onClose }) => {
+    const { t } = useLanguage()
     const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile')
     const [fullName, setFullName] = useState('Zxcv...4x5y')
     const [email, setEmail] = useState('sovereign.staker@ycoin.ai')
@@ -57,7 +59,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                                     {fullName}
                                 </span>
                                 <span className="bg-button-color/10 border border-button-color/30 text-button-color text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    FREE TIER
+                                    {t.profileModal.freeTier}
                                 </span>
                             </div>
                             <span className="text-xs text-description font-medium mt-0.5">
@@ -86,7 +88,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             }`}
                     >
                         <FiUser className="w-4 h-4" />
-                        <span>Profile Details & Photo</span>
+                        <span>{t.profileModal.tabProfile}</span>
                     </button>
 
                     <button
@@ -97,7 +99,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             }`}
                     >
                         <FiLock className="w-4 h-4" />
-                        <span>Security & Password</span>
+                        <span>{t.profileModal.tabSecurity}</span>
                     </button>
                 </div>
 
@@ -115,7 +117,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                         <div className="space-y-2">
                             <div className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiCamera className="w-3.5 h-3.5 text-button-color" />
-                                <span>Profile Picture / Image Upload</span>
+                                <span>{t.profileModal.uploadTitle}</span>
                             </div>
 
                             <div className="border border-dashed border-border-color hover:border-button-color/60 bg-[#020813] rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group">
@@ -123,10 +125,10 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                                     <FiUpload className="w-4 h-4" />
                                 </div>
                                 <span className="text-white text-xs font-bold">
-                                    Click or Drag & Drop an image file
+                                    {t.profileModal.uploadPrompt}
                                 </span>
                                 <span className="text-description text-[10px] mt-1 font-medium">
-                                    PNG, JPG, WebP, GIF or SVG (max 5MB)
+                                    {t.profileModal.uploadSpecs}
                                 </span>
                             </div>
                         </div>
@@ -135,7 +137,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiUser className="w-3.5 h-3.5 text-button-color" />
-                                <span>Full Name</span>
+                                <span>{t.profileModal.fullName}</span>
                             </label>
                             <input
                                 type="text"
@@ -150,10 +152,10 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             <div className="flex items-center justify-between">
                                 <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                     <FiMail className="w-3.5 h-3.5 text-button-color" />
-                                    <span>Email Address</span>
+                                    <span>{t.profileModal.emailAddress}</span>
                                 </label>
                                 <span className="text-[10px] font-bold text-button-color flex items-center gap-1">
-                                    <FiCheckCircle className="w-3 h-3" /> Verified
+                                    <FiCheckCircle className="w-3 h-3" /> {t.profileModal.verified}
                                 </span>
                             </div>
                             <input
@@ -170,7 +172,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99]"
                         >
                             <FiSave className="w-4 h-4" />
-                            <span>Save Profile Changes</span>
+                            <span>{t.profileModal.saveProfile}</span>
                         </button>
                     </form>
                 )}
@@ -182,11 +184,11 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiKey className="w-3.5 h-3.5 text-button-color" />
-                                <span>Current Password</span>
+                                <span>{t.profileModal.currentPassword}</span>
                             </label>
                             <input
                                 type="password"
-                                placeholder="Enter current password"
+                                placeholder={t.profileModal.currentPassword}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
@@ -197,11 +199,11 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiLock className="w-3.5 h-3.5 text-button-color" />
-                                <span>New Password</span>
+                                <span>{t.profileModal.newPassword}</span>
                             </label>
                             <input
                                 type="password"
-                                placeholder="Minimum 6 characters"
+                                placeholder={t.profileModal.newPassword}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
@@ -212,11 +214,11 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiLock className="w-3.5 h-3.5 text-button-color" />
-                                <span>Confirm New Password</span>
+                                <span>{t.profileModal.confirmPassword}</span>
                             </label>
                             <input
                                 type="password"
-                                placeholder="Re-enter new password"
+                                placeholder={t.profileModal.confirmPassword}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
@@ -229,7 +231,7 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99]"
                         >
                             <FiLock className="w-4 h-4" />
-                            <span>Update Password</span>
+                            <span>{t.profileModal.updatePassword}</span>
                         </button>
                     </form>
                 )}

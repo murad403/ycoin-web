@@ -9,10 +9,12 @@ import { Button } from '../ui/button'
 import { resetPasswordSchema, TResetPasswordInput } from '@/validation/auth.validation'
 import StepIndicator from '../shared/StepIndicator'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 
 const ResetPasswordPage = () => {
     const router = useRouter();
+    const { t } = useLanguage()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TResetPasswordInput>({
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
@@ -28,8 +30,8 @@ const ResetPasswordPage = () => {
 
     return (
         <AuthWrapper
-            title="Reset Password"
-            description="Code verified! Please enter your new account password below."
+            title={t.auth.resetPasswordTitle}
+            description={t.auth.resetPasswordDesc}
         >
             {/* Steps Indicator */}
             <StepIndicator step={3} />
@@ -39,9 +41,9 @@ const ResetPasswordPage = () => {
                 {/* Password Field */}
                 <Input
                     {...register('password')}
-                    label="Password"
+                    label={t.auth.passwordLabel}
                     type="password"
-                    placeholder="..........."
+                    placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.password?.message}
                 />
@@ -49,16 +51,16 @@ const ResetPasswordPage = () => {
                 {/* Confirm Password Field */}
                 <Input
                     {...register('confirmPassword')}
-                    label="Confirm Password"
+                    label={t.auth.confirmPasswordLabel}
                     type="password"
-                    placeholder="..........."
+                    placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.confirmPassword?.message}
                 />
 
                 {/* Submit Button */}
                 <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
-                    Verify & Reset Password <FiArrowRight className="w-4 h-4" />
+                    {t.auth.resetBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 
                 {/* Back Link */}
@@ -66,7 +68,7 @@ const ResetPasswordPage = () => {
                     href="/auth/sign-in"
                     className="text-zinc-400 hover:text-white text-xs font-semibold mt-2 transition-all duration-200 select-none block text-center"
                 >
-                    Back to Sign In
+                    {t.auth.signInTab}
                 </Link>
             </form>
         </AuthWrapper>

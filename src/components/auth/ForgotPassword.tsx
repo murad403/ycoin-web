@@ -9,9 +9,11 @@ import { Button } from '../ui/button'
 import { forgotPasswordSchema, TForgotPasswordInput } from '@/validation/auth.validation'
 import { useRouter } from 'next/navigation'
 import StepIndicator from '../shared/StepIndicator'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const ForgotPassword = () => {
     const router = useRouter();
+    const { t } = useLanguage()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TForgotPasswordInput>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
@@ -25,7 +27,7 @@ const ForgotPassword = () => {
     }
 
     return (
-        <AuthWrapper title="Reset Password">
+        <AuthWrapper title={t.auth.forgotPasswordTitle} description={t.auth.forgotPasswordDesc}>
             {/* Steps Indicator */}
             <StepIndicator step={1} />
 
@@ -34,16 +36,16 @@ const ForgotPassword = () => {
                 {/* Email Field */}
                 <Input
                     {...register('email')}
-                    label="Email Address"
+                    label={t.auth.emailLabel}
                     type="email"
-                    placeholder="your.email@domain.com"
+                    placeholder={t.auth.emailPlaceholder}
                     icon={FiMail}
                     error={errors.email?.message}
                 />
 
                 {/* Submit Button */}
                 <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
-                    Send Verification Code <FiArrowRight className="w-4 h-4" />
+                    {t.auth.sendOtpBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 
                 {/* Back Link */}
@@ -51,7 +53,7 @@ const ForgotPassword = () => {
                     href="/auth/sign-in"
                     className="text-zinc-400 hover:text-white text-xs font-semibold mt-2 transition-all duration-200 select-none block text-center"
                 >
-                    Back to Sign In
+                    {t.auth.signInTab}
                 </Link>
             </form>
         </AuthWrapper>

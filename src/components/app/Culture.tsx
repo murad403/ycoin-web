@@ -2,6 +2,7 @@
 import { Flame, ShieldAlert } from 'lucide-react'
 import React from 'react'
 import { FiTerminal, FiCode, FiBookOpen } from 'react-icons/fi'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 type TCultureCard = {
     icon: React.ComponentType<{ className?: string }>
@@ -10,21 +11,23 @@ type TCultureCard = {
 }
 
 const Culture = () => {
+    const { t } = useLanguage()
+
     const cards: TCultureCard[] = [
         {
             icon: FiTerminal,
-            title: "Don't Trust, Verify",
-            description: "Every AI inference proof is mathematically verifiable on the Bitcoin ledger."
+            title: t.culture.card1.title,
+            description: t.culture.card1.description
         },
         {
             icon: FiCode,
-            title: "Permissionless Creation",
-            description: "Anyone, anywhere can deploy autonomous AI agents on the YCOIN matrix."
+            title: t.culture.card2.title,
+            description: t.culture.card2.description
         },
         {
             icon: Flame,
-            title: "Long-Term Maximalism",
-            description: "We measure progress in centuries, anchored by Bitcoin's 21-million hard cap."
+            title: t.culture.card3.title,
+            description: t.culture.card3.description
         }
     ]
 
@@ -40,16 +43,16 @@ const Culture = () => {
                 <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3]/5 border border-[#0071E3]/35 rounded-full mb-4 select-none shadow-[0_0_15px_rgba(0,113,227,0.05)]">
                     <FiBookOpen className="w-3 h-3 text-heading" />
                     <span className="text-[10px] font-mono tracking-wider text-heading uppercase font-bold">
-                        Project Ethos
+                        {t.culture.badge}
                     </span>
                 </div>
 
                 {/* Title & Description */}
                 <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-2">
-                    Culture
+                    {t.culture.title}
                 </h2>
                 <p className="text-description text-base sm:text-lg leading-relaxed max-w-xl mb-12">
-                    Built by cypherpunks, driven by code, dedicated to human freedom.
+                    {t.culture.subtitle}
                 </p>
 
                 {/* Main Quote Card */}
@@ -64,19 +67,19 @@ const Culture = () => {
                     <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3]/5 border border-[#0071E3]/35 rounded-full mb-6 select-none">
                         <span className="text-[10px] font-mono tracking-wider text-[#0071E3] uppercase font-bold flex items-center gap-1.5">
                             <ShieldAlert size={16}/>
-                            The Cypherpunk Manifesto
+                            {t.culture.manifestoTitle}
                         </span>
                     </div>
 
                     {/* Quote Text */}
                     <p className="text-white text-base md:text-xl md:leading-relaxed mb-8 max-w-3xl relative z-10">
-                        "YCOIN is not an enterprise product; it is a movement. Born from the cypherpunk ethos that birthed Bitcoin, we believe that artificial intelligence must remain free, open, and decentralized. We operate without centralized headquarters or regulatory compromise — only cryptographic truth and open sovereign code."
+                        {t.culture.manifestoQuote}
                     </p>
 
                     {/* Card Footer tags */}
                     <div className="flex items-center gap-2 text-heading font-mono text-[9px] sm:text-[10px] font-bold tracking-widest uppercase select-none relative z-10">
                         <span className="w-2 h-2 rounded-full bg-button-color animate-pulse" />
-                        <span className='text-description text-sm'>YCOIN Decentralized Core Collective • NO HQ • Open Source</span>
+                        <span className='text-description text-sm'>{t.culture.manifestoFooter}</span>
                     </div>
 
                 </div>

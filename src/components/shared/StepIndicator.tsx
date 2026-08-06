@@ -1,9 +1,15 @@
 
+'use client'
+
+import { useLanguage } from '@/i18n/LanguageContext'
+
 type TProps = {
     step: 1 | 2 | 3
 }
 
 const StepIndicator = ({ step }: TProps) => {
+    const { t } = useLanguage()
+
     return (
         <div className="flex items-center justify-between w-full text-xs font-mono tracking-wider mb-6 px-1 select-none">
             {/* Step 1 */}
@@ -14,7 +20,7 @@ const StepIndicator = ({ step }: TProps) => {
                     1
                 </span>
                 <span className={step === 1 ? 'text-heading font-bold' : 'text-description font-semibold'}>
-                    Enter Email
+                    {t.auth.step1}
                 </span>
             </div>
 
@@ -29,7 +35,7 @@ const StepIndicator = ({ step }: TProps) => {
                     2
                 </span>
                 <span className={step === 2 ? 'text-heading font-bold' : 'text-description font-semibold'}>
-                    Enter Code
+                    {t.auth.step2}
                 </span>
             </div>
 
@@ -44,7 +50,7 @@ const StepIndicator = ({ step }: TProps) => {
                     3
                 </span>
                 <span className={step === 3 ? 'text-heading font-bold' : 'text-description font-semibold'}>
-                    New Password
+                    {t.auth.step3}
                 </span>
             </div>
         </div>

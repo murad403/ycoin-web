@@ -5,9 +5,12 @@ import heroImg from '@/assets/images/hero.png'
 import { FiBell, FiSend, FiShield } from 'react-icons/fi'
 import { FaBitcoin, FaXmark } from 'react-icons/fa6'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const Hero = () => {
     const router = useRouter()
+    const { t } = useLanguage()
+
     const handleGetStarted = (e: React.FormEvent) => {
         e.preventDefault()
         router.push('/auth/sign-up')
@@ -28,27 +31,27 @@ const Hero = () => {
                         {/* Discover Pill */}
                         <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3]/5 border border-border-color rounded-full mb-6 select-none shadow-[0_0_15px_rgba(0,113,227,0.05)]">
                             <span className="text-[11px] font-mono tracking-wider text-heading uppercase font-bold">
-                                Discover More
+                                {t.hero.discoverMore}
                             </span>
                             <FiBell className="w-3 h-3 text-[#0071E3]" />
                         </div>
 
                         {/* Heading */}
                         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.08] select-none">
-                            Super Chatbot AI <br />
-                            <span className="text-heading">Automation</span>
+                            {t.hero.titleLine1} <br />
+                            <span className="text-heading">{t.hero.titleLine2}</span>
                         </h1>
 
                         {/* Description */}
                         <p className="text-description text-sm sm:text-base leading-relaxed max-w-xl mb-8">
-                            Cost-Effective Solution To Generate Text In Seconds Increasing Your Conversion Rate. Anchored by Bitcoin's Proof-of-Work sovereign network.
+                            {t.hero.description}
                         </p>
 
                         {/* Input Bar */}
                         <form onSubmit={handleGetStarted} className="w-full max-w-lg flex bg-[#020813] border border-border-color rounded-xl p-1.5 shadow-[0_0_30px_rgba(0,0,0,0.6)] mb-12 focus-within:border-[#0071E3] transition-all duration-200">
                             <input
                                 type="text"
-                                placeholder="Solution To Generate Text / Ask Satoshi AI..."
+                                placeholder={t.hero.inputPlaceholder}
                                 className="flex-1 bg-transparent text-white px-4 py-3 text-xs sm:text-sm placeholder-zinc-600 focus:outline-none"
                             />
                             <button
@@ -56,14 +59,14 @@ const Hero = () => {
                                 className="bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center gap-2 select-none active:scale-[0.98] transition-all shrink-0 cursor-pointer"
                             >
                                 <FiSend className="w-3.5 h-3.5" />
-                                Get Started
+                                {t.hero.getStarted}
                             </button>
                         </form>
 
                         {/* Trusted By */}
                         <div className="flex flex-col gap-4">
                             <span className="text-[10px] font-mono tracking-widest text-description uppercase font-bold">
-                                Trusted by leading crypto ecosystems
+                                {t.hero.trustedBy}
                             </span>
                             <div className="flex flex-wrap items-center gap-6 md:gap-8">
                                 {/* Exodus */}

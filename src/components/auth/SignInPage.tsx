@@ -9,9 +9,11 @@ import { Button } from '../ui/button'
 import { signInSchema, TSignInInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 const SignInPage = () => {
     const router = useRouter();
+    const { t } = useLanguage()
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
@@ -27,8 +29,8 @@ const SignInPage = () => {
 
     return (
         <AuthWrapper
-            title="Sign In to YCOIN"
-            description="Bitcoin Native Sovereign AI Platform Authentication"
+            title={t.auth.signInTitle}
+            description={t.auth.signInDesc}
         >
             {/* Tab Switcher */}
            <TabSwitcher/>
@@ -38,9 +40,9 @@ const SignInPage = () => {
                 {/* Email Field */}
                 <Input
                     {...register('email')}
-                    label="Email Address"
+                    label={t.auth.emailLabel}
                     type="email"
-                    placeholder="your.email@domain.com"
+                    placeholder={t.auth.emailPlaceholder}
                     icon={FiMail}
                     error={errors.email?.message}
                 />
@@ -48,9 +50,9 @@ const SignInPage = () => {
                 {/* Password Field */}
                 <Input
                     {...register('password')}
-                    label="Password"
+                    label={t.auth.passwordLabel}
                     type="password"
-                    placeholder="..........."
+                    placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.password?.message}
                     rightElement={
@@ -58,14 +60,14 @@ const SignInPage = () => {
                             href="/auth/forgot-password"
                             className="text-heading hover:underline font-semibold text-[11px] tracking-wide"
                         >
-                            Forgot Password?
+                            {t.auth.forgotPassword}
                         </Link>
                     }
                 />
 
                 {/* Submit Button */}
                 <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
-                    Sign In <FiArrowRight className="w-4 h-4" />
+                    {t.auth.signInBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
             </form>
         </AuthWrapper>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FiSearch, FiPlus, FiBell, FiGrid, FiFileText, FiInfo, FiChevronUp, FiChevronDown, FiUser, FiLogOut, FiChevronsLeft, FiChevronsRight, FiX } from 'react-icons/fi'
 import { MessageCircle } from 'lucide-react'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 interface ChatSidebarProps {
   isCollapsed: boolean
@@ -17,12 +18,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
   const pathname = usePathname();
   const router = useRouter();
   const [isChatsOpen, setIsChatsOpen] = useState(true);
+  const { t } = useLanguage()
 
   const menuItems = [
-    { label: 'Alerts', icon: FiBell, href: '/alerts' },
-    { label: 'Discover', icon: FiGrid, href: '/discover' },
-    { label: 'Terms Of Conditions', icon: FiFileText, href: '/terms-of-conditions' },
-    { label: 'Privacy Policy', icon: FiInfo, href: '/privacy-policy' },
+    { label: t.chat.alerts, icon: FiBell, href: '/alerts' },
+    { label: t.chat.discover, icon: FiGrid, href: '/discover' },
+    { label: t.chat.termsOfConditions, icon: FiFileText, href: '/terms-of-conditions' },
+    { label: t.chat.privacyPolicy, icon: FiInfo, href: '/privacy-policy' },
   ]
 
   const chatHistory = [
@@ -78,7 +80,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
             <FiSearch className="w-4 h-4 text-description mr-2 shrink-0" />
             <input
               type="text"
-              placeholder="Search chats..."
+              placeholder={t.chat.searchPlaceholder}
               className="bg-transparent text-xs text-white placeholder-title focus:outline-none w-full"
             />
           </div>
@@ -86,7 +88,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
           <button
             onClick={onToggleCollapse}
             className="w-full flex items-center justify-center bg-[#020813] border border-border-color rounded-xl p-3 mb-4 hover:border-button-color text-description hover:text-white cursor-pointer transition-colors"
-            title="Search Chats"
+            title={t.chat.searchPlaceholder}
           >
             <FiSearch className="w-4 h-4 shrink-0" />
           </button>
@@ -102,13 +104,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
             className="w-full flex items-center gap-2.5 text-button-color font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
           >
             <FiPlus className="w-4 h-4 text-button-color shrink-0" />
-            <span>New Chat</span>
+            <span>{t.chat.newChat}</span>
           </Link>
         ) : (
           <Link
             href="/new-chat"
             className="w-12 h-12 mx-auto flex items-center justify-center text-button-color rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
-            title="New Chat"
+            title={t.chat.newChat}
           >
             <FiPlus className="w-4 h-4 text-button-color shrink-0" />
           </Link>
@@ -158,7 +160,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
           >
             <div className="flex items-center gap-2.5">
               <MessageCircle className="w-4 h-4 text-description shrink-0" />
-              <span>Chats</span>
+              <span>{t.chat.chats}</span>
             </div>
             {isChatsOpen ? (
               <FiChevronUp className="w-3.5 h-3.5 text-description shrink-0" />
@@ -216,7 +218,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
             </div>
 
             <button
-              title="Logout / Exit"
+              title={t.chat.logOut}
               onClick={handleLogout}
               className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
             >
@@ -237,7 +239,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
             {/* Collapsed Logout */}
             <button
               onClick={handleLogout}
-              title="Logout / Exit"
+              title={t.chat.logOut}
               className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
             >
               <FiLogOut className="w-4 h-4" />
