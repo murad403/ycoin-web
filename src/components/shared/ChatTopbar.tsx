@@ -44,6 +44,16 @@ const ChatTopbar = () => {
 
             {/* Right side: Search, Notifications & Exit Terminal */}
             <div className="flex items-center gap-3 sm:gap-4">
+                {/* Search Input Bar */}
+                <div className="hidden sm:flex items-center bg-[#020813] border border-border-color rounded-xl px-3.5 py-2 w-60 lg:w-72 focus-within:border-button-color transition-all">
+                    <FiSearch className="w-4 h-4 text-description mr-2.5 shrink-0" />
+                    <input
+                        type="text"
+                        placeholder="Search by token or CA..."
+                        className="bg-transparent text-xs text-white placeholder-description focus:outline-none w-full"
+                    />
+                </div>
+
                 {/* Notification Bell with Badge */}
                 <button className="relative p-2.5 text-zinc-300 hover:text-title rounded-xl border border-border-color bg-[#020813] hover:bg-zinc-900/60 transition-colors cursor-pointer select-none">
                     <FiBell className="w-4 h-4" />

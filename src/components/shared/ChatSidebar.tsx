@@ -8,7 +8,7 @@ const ChatSidebar = () => {
     const [isChatsOpen, setIsChatsOpen] = useState(true)
 
     const menuItems = [
-        { label: 'Alerts', icon: FiBell, href: '/new-chat' },
+        { label: 'Alerts', icon: FiBell, href: '/alerts' },
         { label: 'Discover', icon: FiGrid, href: '/discover' },
         { label: 'Terms Of Conditions', icon: FiFileText, href: '/terms-of-conditions' },
         { label: 'Privacy Policy', icon: FiInfo, href: '/privacy-policy' },
