@@ -43,14 +43,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
     <aside
       className={`
         fixed md:static inset-y-0 left-0 z-50 md:z-auto
-        bg-black h-screen md:h-full flex flex-col p-4 shrink-0 overflow-y-auto border-r border-border-color/50 md:border-r-0
+        bg-black h-screen md:h-full flex flex-col p-4 shrink-0 overflow-hidden border-r border-border-color/50 md:border-r-0
         transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
         transition-all duration-300 ease-in-out
         ${isCollapsed ? 'w-20 md:w-20' : 'w-64 md:w-72'}
       `}
     >
-      {/* Sidebar Header: Toggle Buttons */}
-      <div className="flex items-center justify-center mb-4 border-b border-border-color/30 pb-3">
+      {/* Sidebar Header: Toggle Buttons (Fixed) */}
+      <div className="flex items-center justify-center mb-4 border-b border-border-color/30 pb-3 shrink-0">
         {/* Desktop Collapse Button */}
         <button
           onClick={onToggleCollapse}
@@ -70,48 +70,52 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
         </button>
       </div>
 
-      {/* Search Input Box */}
-      {!isCollapsed ? (
-        <div className="relative flex items-center bg-[#020813] border border-border-color rounded-xl px-3 py-3 mb-4 focus-within:border-button-color transition-colors">
-          <FiSearch className="w-4 h-4 text-description mr-2 shrink-0" />
-          <input
-            type="text"
-            placeholder="Search chats..."
-            className="bg-transparent text-xs text-white placeholder-title focus:outline-none w-full"
-          />
-        </div>
-      ) : (
-        <button
-          onClick={onToggleCollapse}
-          className="flex items-center justify-center bg-[#020813] border border-border-color rounded-xl p-3 mb-4 hover:border-button-color text-description hover:text-white cursor-pointer transition-colors"
-          title="Search Chats"
-        >
-          <FiSearch className="w-4 h-4 shrink-0" />
-        </button>
-      )}
+      {/* Search Input Box (Fixed) */}
+      <div className="shrink-0">
+        {!isCollapsed ? (
+          <div className="relative flex items-center bg-[#020813] border border-border-color rounded-xl px-3 py-3 mb-4 focus-within:border-button-color transition-colors">
+            <FiSearch className="w-4 h-4 text-description mr-2 shrink-0" />
+            <input
+              type="text"
+              placeholder="Search chats..."
+              className="bg-transparent text-xs text-white placeholder-title focus:outline-none w-full"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={onToggleCollapse}
+            className="w-full flex items-center justify-center bg-[#020813] border border-border-color rounded-xl p-3 mb-4 hover:border-button-color text-description hover:text-white cursor-pointer transition-colors"
+            title="Search Chats"
+          >
+            <FiSearch className="w-4 h-4 shrink-0" />
+          </button>
+        )}
+      </div>
 
-      {/* New Chat Button */}
-      {!isCollapsed ? (
-        <Link
-          href="/new-chat"
-          onClick={onCloseMobile}
-          className="w-full flex items-center gap-2.5 text-button-color font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
-        >
-          <FiPlus className="w-4 h-4 text-button-color shrink-0" />
-          <span>New Chat</span>
-        </Link>
-      ) : (
-        <Link
-          href="/new-chat"
-          className="w-12 h-12 mx-auto flex items-center justify-center text-button-color rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
-          title="New Chat"
-        >
-          <FiPlus className="w-4 h-4 text-button-color shrink-0" />
-        </Link>
-      )}
+      {/* New Chat Button (Fixed) */}
+      <div className="shrink-0">
+        {!isCollapsed ? (
+          <Link
+            href="/new-chat"
+            onClick={onCloseMobile}
+            className="w-full flex items-center gap-2.5 text-button-color font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
+          >
+            <FiPlus className="w-4 h-4 text-button-color shrink-0" />
+            <span>New Chat</span>
+          </Link>
+        ) : (
+          <Link
+            href="/new-chat"
+            className="w-12 h-12 mx-auto flex items-center justify-center text-button-color rounded-xl border border-button-color/20 bg-button-color/5 hover:bg-button-color/15 transition-all select-none mb-5"
+            title="New Chat"
+          >
+            <FiPlus className="w-4 h-4 text-button-color shrink-0" />
+          </Link>
+        )}
+      </div>
 
-      {/* Main Menu List */}
-      <div className="flex flex-col gap-1 mb-6">
+      {/* Main Menu List (Fixed) */}
+      <div className="flex flex-col gap-1 mb-6 shrink-0">
         {menuItems.map((item, idx) => {
           const Icon = item.icon
           const isActive = pathname === item.href
@@ -144,12 +148,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
         })}
       </div>
 
-      {/* Chats Section Accordion */}
+      {/* Chats Section Accordion (Fixed Header, Scrollable Children List) */}
       {!isCollapsed ? (
-        <div className="flex flex-col gap-1 mb-6 grow">
+        <div className="flex flex-col gap-1 mb-6 flex-1 overflow-hidden">
           <button
             onClick={() => setIsChatsOpen(!isChatsOpen)}
-            className="flex items-center justify-between w-full text-description hover:text-white text-sm font-semibold py-2 px-3 rounded-lg transition-colors select-none cursor-pointer"
+            className="flex items-center justify-between w-full text-description hover:text-white text-sm font-semibold py-2 px-3 rounded-lg transition-colors select-none cursor-pointer shrink-0"
           >
             <div className="flex items-center gap-2.5">
               <MessageCircle className="w-4 h-4 text-description shrink-0" />
@@ -169,7 +173,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
                   key={idx}
                   href="/new-chat"
                   onClick={onCloseMobile}
-                  className="text-description hover:text-white text-[13px] font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none"
+                  className="text-description hover:text-white text-[13px] font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none shrink-0"
                 >
                   {chat}
                 </Link>
@@ -178,10 +182,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-1 mb-6 grow">
+        <div className="flex flex-col items-center gap-1 mb-6 flex-1 overflow-hidden">
           <button
             onClick={onToggleCollapse}
-            className="flex items-center justify-center p-3 rounded-lg text-description hover:text-white hover:bg-zinc-900/60 transition-colors select-none cursor-pointer"
+            className="flex items-center justify-center p-3 rounded-lg text-description hover:text-white hover:bg-zinc-900/60 transition-colors select-none cursor-pointer shrink-0"
             title="Open Chats"
           >
             <MessageCircle className="w-4 h-4 shrink-0" />
@@ -189,51 +193,53 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
         </div>
       )}
 
-      {/* Bottom Profile Box */}
-      {!isCollapsed ? (
-        <div className="mt-auto bg-[#020813] border border-border-color rounded-2xl p-3 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0">
-              <FiUser className="w-4 h-4" />
+      {/* Sticky Bottom Profile Box (Fixed) */}
+      <div className="mt-auto pt-4 shrink-0 border-t border-border-color/30 bg-black">
+        {!isCollapsed ? (
+          <div className="bg-[#020813] border border-border-color rounded-2xl p-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0">
+                <FiUser className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-white text-xs font-bold font-mono tracking-tight">
+                  Zxcv...4x5y
+                </span>
+                <span className="text-description text-[10px] font-medium">
+                  Free
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col text-left">
-              <span className="text-white text-xs font-bold font-mono tracking-tight">
-                Zxcv...4x5y
-              </span>
-              <span className="text-description text-[10px] font-medium">
-                Free
-              </span>
+
+            <button
+              title="Logout / Exit"
+              onClick={handleLogout}
+              className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
+            >
+              <FiLogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 items-center">
+            {/* Collapsed Profile Avatar */}
+            <div
+              className="w-10 h-10 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0"
+              title="Profile (Zxcv...4x5y)"
+            >
+              <FiUser className="w-5 h-5" />
             </div>
-          </div>
 
-          <button
-            title="Logout / Exit"
-            onClick={handleLogout}
-            className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
-          >
-            <FiLogOut className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      ) : (
-        <div className="mt-auto flex flex-col gap-3 items-center shrink-0">
-          {/* Collapsed Profile Avatar */}
-          <div
-            className="w-10 h-10 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0"
-            title="Profile (Zxcv...4x5y)"
-          >
-            <FiUser className="w-5 h-5" />
+            {/* Collapsed Logout */}
+            <button
+              onClick={handleLogout}
+              title="Logout / Exit"
+              className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
+            >
+              <FiLogOut className="w-4 h-4" />
+            </button>
           </div>
-
-          {/* Collapsed Logout */}
-          <button
-            onClick={handleLogout}
-            title="Logout / Exit"
-            className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all cursor-pointer select-none"
-          >
-            <FiLogOut className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </aside>
   )
 }

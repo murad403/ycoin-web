@@ -8,12 +8,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="h-screen w-screen bg-black text-white flex flex-col overflow-hidden">
       {/* Top Navigation Bar */}
       <ChatTopbar onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
 
       {/* Main Content Area: Sidebar + Chat Window */}
-      <div className="flex flex-1 h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] overflow-hidden relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
         {/* Left Sidebar */}
         <ChatSidebar
           isCollapsed={isSidebarCollapsed}
