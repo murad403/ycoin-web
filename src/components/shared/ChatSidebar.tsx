@@ -10,9 +10,10 @@ interface ChatSidebarProps {
   onToggleCollapse: () => void
   isMobileOpen: boolean
   onCloseMobile: () => void
+  onOpenProfile?: () => void
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse, isMobileOpen, onCloseMobile }) => {
+const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse, isMobileOpen, onCloseMobile, onOpenProfile }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isChatsOpen, setIsChatsOpen] = useState(true);
@@ -197,12 +198,15 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
       <div className="mt-auto pt-4 shrink-0 border-t border-border-color/30 bg-black">
         {!isCollapsed ? (
           <div className="bg-[#020813] border border-border-color rounded-2xl p-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0">
+            <div
+              onClick={onOpenProfile}
+              className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
+            >
+              <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0 group-hover:bg-button-color/30 transition-colors">
                 <FiUser className="w-4 h-4" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-white text-xs font-bold font-mono tracking-tight">
+                <span className="text-white text-xs font-bold font-mono tracking-tight group-hover:text-button-color transition-colors">
                   Zxcv...4x5y
                 </span>
                 <span className="text-description text-[10px] font-medium">
@@ -223,7 +227,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
           <div className="flex flex-col gap-3 items-center">
             {/* Collapsed Profile Avatar */}
             <div
-              className="w-10 h-10 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0"
+              onClick={onOpenProfile}
+              className="w-10 h-10 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0 cursor-pointer hover:bg-button-color/30 transition-colors"
               title="Profile (Zxcv...4x5y)"
             >
               <FiUser className="w-5 h-5" />

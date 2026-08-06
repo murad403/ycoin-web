@@ -3,9 +3,12 @@ import React, { useState } from 'react'
 import ChatTopbar from '@/components/shared/ChatTopbar'
 import ChatSidebar from '@/components/shared/ChatSidebar'
 
+import ProfileAndSecurityModal from '@/components/chat/ProfileAndSecurityModal'
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   return (
     <div className="h-screen w-screen bg-black text-white flex flex-col overflow-hidden">
@@ -20,6 +23,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
         />
 
         {/* Mobile Sidebar Backdrop Overlay */}
@@ -35,6 +39,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </main>
       </div>
+
+      {/* Profile & Security Modal */}
+      <ProfileAndSecurityModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
     </div>
   )
 }
