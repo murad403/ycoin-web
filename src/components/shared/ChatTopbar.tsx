@@ -4,14 +4,27 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import logoImg from '@/assets/images/logo.png'
-import { FiSearch, FiBell } from 'react-icons/fi'
+import { FiSearch, FiBell, FiMenu } from 'react-icons/fi'
 
-const ChatTopbar = () => {
+interface ChatTopbarProps {
+    onToggleMobileSidebar: () => void
+}
+
+const ChatTopbar: React.FC<ChatTopbarProps> = ({ onToggleMobileSidebar }) => {
     return (
         <header className="w-full h-16 md:h-20 bg-black px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-40">
 
             {/* Left side: Logo & Header Links */}
-            <div className="flex items-center gap-6 md:gap-10">
+            <div className="flex items-center gap-4 md:gap-10">
+                {/* Mobile Menu Toggle Button */}
+                <button
+                    onClick={onToggleMobileSidebar}
+                    className="md:hidden p-2 text-zinc-300 hover:text-white rounded-xl border border-border-color bg-[#020813] hover:bg-zinc-900 transition-all cursor-pointer"
+                    title="Open Sidebar"
+                >
+                    <FiMenu className="w-5 h-5" />
+                </button>
+
                 <Link href="/" className="flex items-center gap-3 group">
                     <div className="p-1 bg-[#020813] border border-border-color rounded-xl shadow-[0_0_12px_var(--color-dropshadow-color)] flex items-center justify-center">
                         <Image
