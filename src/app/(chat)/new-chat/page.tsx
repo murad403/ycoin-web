@@ -4,7 +4,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import logoImg from '@/assets/images/logo.png'
 import chatshowcaseImg from '@/assets/images/chatshowcase.png'
-import { FiSend, FiMic, FiChevronDown, FiCpu, FiUser, FiArrowUp } from 'react-icons/fi'
+import { FiSend, FiChevronDown, FiCpu, FiUser, FiArrowUp } from 'react-icons/fi'
+import VoiceInput from '@/components/shared/VoiceInput'
 
 type TMessage = {
   id: string
@@ -181,13 +182,11 @@ const NewChatPage = () => {
 
             {/* Right Action Icons: Mic & Send */}
             <div className="flex items-center gap-2">
-              <button 
-                type="button" 
-                className="p-2 text-description hover:text-white hover:bg-zinc-900/50 rounded-lg transition-colors cursor-pointer select-none"
-                title="Voice Search"
-              >
-                <FiMic className="w-4 h-4" />
-              </button>
+              <VoiceInput
+                onTranscript={(transcript) => {
+                  setInput(transcript)
+                }}
+              />
 
               <button 
                 type="submit"

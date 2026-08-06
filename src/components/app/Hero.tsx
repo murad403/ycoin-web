@@ -54,13 +54,13 @@ const Hero = () => {
                                 placeholder={t.hero.inputPlaceholder}
                                 className="flex-1 bg-transparent text-white px-4 py-3 text-xs sm:text-sm placeholder-zinc-600 focus:outline-none"
                             />
-                            <button
-                                type="submit"
-                                className="bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center gap-2 select-none active:scale-[0.98] transition-all shrink-0 cursor-pointer"
-                            >
-                                <FiSend className="w-3.5 h-3.5" />
-                                {t.hero.getStarted}
-                            </button>
+                                <button
+                                    type="submit"
+                                    className="bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center gap-2 select-none active:scale-[0.98] transition-all shrink-0 cursor-pointer"
+                                >
+                                    <FiSend className="w-3.5 h-3.5" />
+                                    {t.hero.getStarted}
+                                </button>
                         </form>
 
                         {/* Trusted By */}
