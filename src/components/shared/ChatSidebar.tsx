@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { FiSearch, FiPlus, FiBell, FiGrid, FiFileText, FiInfo, FiMessageSquare, FiChevronUp, FiChevronDown, FiUser, FiLogOut } from 'react-icons/fi'
+import { MessageCircle } from 'lucide-react'
 
 const ChatSidebar = () => {
     const [isChatsOpen, setIsChatsOpen] = useState(true)
@@ -9,8 +10,8 @@ const ChatSidebar = () => {
     const menuItems = [
         { label: 'Alerts', icon: FiBell, href: '/new-chat' },
         { label: 'Discover', icon: FiGrid, href: '/discover' },
-        { label: 'Terms Of Conditions', icon: FiFileText, href: '/termsof-conditions' },
-        { label: 'Privacy Policy', icon: FiInfo, href: '/policy-policy' },
+        { label: 'Terms Of Conditions', icon: FiFileText, href: '/terms-of-conditions' },
+        { label: 'Privacy Policy', icon: FiInfo, href: '/privacy-policy' },
     ]
 
     const chatHistory = [
@@ -52,7 +53,7 @@ const ChatSidebar = () => {
                         <Link
                             key={idx}
                             href={item.href}
-                            className="flex items-center gap-3 text-description hover:text-white text-xs font-semibold py-2 px-3 rounded-lg hover:bg-zinc-900/60 transition-colors select-none"
+                            className="flex items-center gap-3 text-description hover:text-white text-sm font-semibold py-2 px-3 rounded-lg hover:bg-zinc-900/60 transition-colors select-none"
                         >
                             <Icon className="w-4 h-4 text-description" />
                             <span>{item.label}</span>
@@ -65,10 +66,10 @@ const ChatSidebar = () => {
             <div className="flex flex-col gap-1 mb-6 grow">
                 <button
                     onClick={() => setIsChatsOpen(!isChatsOpen)}
-                    className="flex items-center justify-between w-full text-description hover:text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors select-none cursor-pointer"
+                    className="flex items-center justify-between w-full text-description hover:text-white text-sm font-semibold py-2 px-3 rounded-lg transition-colors select-none cursor-pointer"
                 >
                     <div className="flex items-center gap-2.5">
-                        <FiMessageSquare className="w-4 h-4 text-description" />
+                        <MessageCircle className="w-4 h-4 text-description" />
                         <span>Chats</span>
                     </div>
                     {isChatsOpen ? (
@@ -84,7 +85,7 @@ const ChatSidebar = () => {
                             <Link
                                 key={idx}
                                 href="/new-chat"
-                                className="text-description hover:text-white text-xs font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none"
+                                className="text-description hover:text-white text-[13px] font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none"
                             >
                                 {chat}
                             </Link>
