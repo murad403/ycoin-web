@@ -83,7 +83,7 @@ const NewChatPage = () => {
 
           {/* Centered Showcase Image */}
           <div className="w-full max-w-4xl flex justify-center items-center my-2">
-            <div className="relative w-full rounded-2xl border border-border-color/80 overflow-hidden shadow-[0_0_50px_rgba(0,113,227,0.15)] bg-[#020813]">
+            <div className="relative w-full overflow-hidden shadow-[0_0_50px_rgba(0,113,227,0.15)] bg-[#020813]">
               <Image 
                 src={chatshowcaseImg} 
                 alt="Ycoin AI Terminal Dashboard Showcase" 
