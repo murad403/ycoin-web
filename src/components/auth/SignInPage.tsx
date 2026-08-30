@@ -10,11 +10,16 @@ import { signInSchema, TSignInInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useSignInMutation } from '@/redux/features/auth/auth.api'
+import { saveToken } from '@/lib/auth'
+import { toast } from 'sonner'
 
 const SignInPage = () => {
     const router = useRouter();
     const { t } = useLanguage()
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignInInput>({
+    const [signIn, { isLoading }] = useSignInMutation()
+
+    const { register, handleSubmit, formState: { errors } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
             email: '',
@@ -23,8 +28,22 @@ const SignInPage = () => {
     })
 
     const onSubmit = async (data: TSignInInput) => {
-        console.log('Sign In Data:', data)
-        router.push("/")
+        try {
+            const res = await signIn({
+                email: data.email,
+                password: data.password,
+            }).unwrap();
+
+            if (res.access && res.refresh) {
+                await saveToken(res.access, res.refresh);
+            }
+
+            toast.success(res.message || "Login successful.");
+            router.push("/new-chat");
+        } catch (err: any) {
+            const errorMsg = err?.data?.message || err?.data?.detail || "Invalid email or password.";
+            toast.error(errorMsg);
+        }
     }
 
     return (
@@ -66,7 +85,7 @@ const SignInPage = () => {
                 />
 
                 {/* Submit Button */}
-                <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
+                <Button type="submit" loading={isLoading} className="mt-2 flex items-center justify-center gap-2">
                     {t.auth.signInBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
             </form>

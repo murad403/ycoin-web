@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,13 +8,29 @@ import AuthWrapper from '../wrapper/AuthWrapper'
 import { Button } from '../ui/button'
 import { verifyOtpSchema, TVerifyOtpInput } from '@/validation/auth.validation'
 import StepIndicator from '../shared/StepIndicator'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
+import {
+    useSignUpVerifyEmailMutation,
+    useForgotPasswordVerifyOtpMutation,
+    useForgotPasswordMutation
+} from '@/redux/features/auth/auth.api'
+import { toast } from 'sonner'
 
-const VerifyOtpPage = () => {
+const VerifyOtpContent = () => {
     const [timer, setTimer] = useState(46);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useLanguage()
+
+    const email = searchParams.get('email') || '';
+    const type = searchParams.get('type') || 'signup';
+
+    const [signUpVerifyEmail, { isLoading: isVerifyingSignUp }] = useSignUpVerifyEmailMutation();
+    const [forgotPasswordVerifyOtp, { isLoading: isVerifyingForgot }] = useForgotPasswordVerifyOtpMutation();
+    const [forgotPassword] = useForgotPasswordMutation();
+
+    const isLoading = isVerifyingSignUp || isVerifyingForgot;
 
     useEffect(() => {
         if (timer > 0) {
@@ -25,16 +41,60 @@ const VerifyOtpPage = () => {
         }
     }, [timer])
 
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TVerifyOtpInput>({
+    const { register, handleSubmit, formState: { errors } } = useForm<TVerifyOtpInput>({
         resolver: zodResolver(verifyOtpSchema),
         defaultValues: {
             otp: '',
         },
     })
 
+    const handleResendOtp = async () => {
+        if (!email) {
+            toast.error("Email address is missing.");
+            return;
+        }
+        try {
+            await forgotPassword({ email }).unwrap();
+            toast.success("OTP resent successfully.");
+            setTimer(59);
+        } catch (err: any) {
+            toast.error(err?.data?.message || err?.data?.detail || "Failed to resend OTP.");
+        }
+    }
+
     const onSubmit = async (data: TVerifyOtpInput) => {
-        console.log('OTP Verification Data:', data)
-        router.push("/auth/reset-password")
+        if (!email) {
+            toast.error("Email address is missing.");
+            return;
+        }
+
+        if (type === 'forgot') {
+            try {
+                const res = await forgotPasswordVerifyOtp({
+                    email,
+                    otp: data.otp,
+                }).unwrap();
+
+                toast.success(res.detail || "Password reset OTP verified successfully.");
+                router.push(`/auth/reset-password?token=${encodeURIComponent(res.reset_token)}`);
+            } catch (err: any) {
+                const errorMsg = err?.data?.message || err?.data?.detail || "OTP verification failed.";
+                toast.error(errorMsg);
+            }
+        } else {
+            try {
+                const res = await signUpVerifyEmail({
+                    email,
+                    otp: data.otp,
+                }).unwrap();
+
+                toast.success(res.detail || "Email verified successfully.");
+                router.push("/auth/sign-in");
+            } catch (err: any) {
+                const errorMsg = err?.data?.message || err?.data?.detail || "OTP verification failed.";
+                toast.error(errorMsg);
+            }
+        }
     }
 
     return (
@@ -67,7 +127,7 @@ const VerifyOtpPage = () => {
                         </div>
                         <button
                             type="button"
-                            onClick={() => timer === 0 && setTimer(59)}
+                            onClick={() => timer === 0 && handleResendOtp()}
                             disabled={timer > 0}
                             className={`h-11.5 w-15 border border-zinc-800 bg-[#020813] text-[#0071E3] font-mono text-xs font-bold rounded-lg flex items-center justify-center shrink-0 ${timer === 0 ? 'cursor-pointer hover:border-[#0071E3]/50' : 'cursor-default'}`}
                         >
@@ -82,7 +142,7 @@ const VerifyOtpPage = () => {
                 </div>
 
                 {/* Submit Button */}
-                <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
+                <Button type="submit" loading={isLoading} className="mt-2 flex items-center justify-center gap-2">
                     {t.auth.verifyBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 
@@ -95,6 +155,14 @@ const VerifyOtpPage = () => {
                 </Link>
             </form>
         </AuthWrapper>
+    )
+}
+
+const VerifyOtpPage = () => {
+    return (
+        <Suspense fallback={<div className="text-white text-center py-8">Loading...</div>}>
+            <VerifyOtpContent />
+        </Suspense>
     )
 }
 

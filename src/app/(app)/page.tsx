@@ -6,13 +6,13 @@ import Roadmap from '@/components/app/Roadmap'
 
 const page = () => {
   return (
-    <div>
+    <>
       <Hero />
       <Instructions />
       <Philosophy />
       <Roadmap />
       <Culture />
-    </div>
+    </>
   )
 }
 

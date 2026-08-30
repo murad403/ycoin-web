@@ -3,9 +3,7 @@ import ForgotPassword from '@/components/auth/ForgotPassword'
 
 const page = () => {
   return (
-    <div>
-        <ForgotPassword/>
-    </div>
+    <ForgotPassword />
   )
 }
 

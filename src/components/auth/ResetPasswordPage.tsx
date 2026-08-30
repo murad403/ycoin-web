@@ -1,4 +1,5 @@
 'use client'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,14 +9,20 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { resetPasswordSchema, TResetPasswordInput } from '@/validation/auth.validation'
 import StepIndicator from '../shared/StepIndicator'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useResetPasswordMutation } from '@/redux/features/auth/auth.api'
+import { toast } from 'sonner'
 
-
-const ResetPasswordPage = () => {
+const ResetPasswordContent = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useLanguage()
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TResetPasswordInput>({
+    const [resetPassword, { isLoading }] = useResetPasswordMutation()
+
+    const token = searchParams.get('token') || '';
+
+    const { register, handleSubmit, formState: { errors } } = useForm<TResetPasswordInput>({
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
             password: '',
@@ -24,8 +31,23 @@ const ResetPasswordPage = () => {
     })
 
     const onSubmit = async (data: TResetPasswordInput) => {
-        console.log('Reset Password Data:', data)
-        router.push("/auth/sign-in");
+        if (!token) {
+            toast.error("Reset token is missing or invalid.");
+            return;
+        }
+
+        try {
+            const res = await resetPassword({
+                reset_token: token,
+                new_password: data.password,
+            }).unwrap();
+
+            toast.success(res.detail || "Password reset successfully.");
+            router.push("/auth/sign-in");
+        } catch (err: any) {
+            const errorMsg = err?.data?.message || err?.data?.detail || "Password reset failed.";
+            toast.error(errorMsg);
+        }
     }
 
     return (
@@ -59,7 +81,7 @@ const ResetPasswordPage = () => {
                 />
 
                 {/* Submit Button */}
-                <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
+                <Button type="submit" loading={isLoading} className="mt-2 flex items-center justify-center gap-2">
                     {t.auth.resetBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 
@@ -72,6 +94,14 @@ const ResetPasswordPage = () => {
                 </Link>
             </form>
         </AuthWrapper>
+    )
+}
+
+const ResetPasswordPage = () => {
+    return (
+        <Suspense fallback={<div className="text-white text-center py-8">Loading...</div>}>
+            <ResetPasswordContent />
+        </Suspense>
     )
 }
 

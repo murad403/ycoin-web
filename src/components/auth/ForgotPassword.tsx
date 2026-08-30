@@ -10,11 +10,15 @@ import { forgotPasswordSchema, TForgotPasswordInput } from '@/validation/auth.va
 import { useRouter } from 'next/navigation'
 import StepIndicator from '../shared/StepIndicator'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useForgotPasswordMutation } from '@/redux/features/auth/auth.api'
+import { toast } from 'sonner'
 
 const ForgotPassword = () => {
     const router = useRouter();
     const { t } = useLanguage()
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TForgotPasswordInput>({
+    const [forgotPassword, { isLoading }] = useForgotPasswordMutation()
+
+    const { register, handleSubmit, formState: { errors } } = useForm<TForgotPasswordInput>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
             email: '',
@@ -22,8 +26,14 @@ const ForgotPassword = () => {
     })
 
     const onSubmit = async (data: TForgotPasswordInput) => {
-        console.log('Forgot Password Data:', data)
-        router.push("/auth/verify-otp")
+        try {
+            const res = await forgotPassword({ email: data.email }).unwrap();
+            toast.success(res.detail || "OTP sent successfully.");
+            router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&type=forgot`);
+        } catch (err: any) {
+            const errorMsg = err?.data?.message || err?.data?.detail || "Failed to send OTP. Please try again.";
+            toast.error(errorMsg);
+        }
     }
 
     return (
@@ -44,7 +54,7 @@ const ForgotPassword = () => {
                 />
 
                 {/* Submit Button */}
-                <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
+                <Button type="submit" loading={isLoading} className="mt-2 flex items-center justify-center gap-2">
                     {t.auth.sendOtpBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import CustomCursor from "@/components/shared/CustomCursor";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import ReduxProvider from "@/components/provider/ReduxProvider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ReduxProvider>
           <LanguageProvider>
             <CustomCursor />
+            <Toaster position="top-center" richColors />
             {children}
           </LanguageProvider>
         </ReduxProvider>
@@ -37,4 +39,5 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     </html>
   );
 }
+
 

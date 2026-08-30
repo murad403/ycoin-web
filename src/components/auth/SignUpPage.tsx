@@ -9,11 +9,15 @@ import { signUpSchema, TSignUpInput } from '@/validation/auth.validation'
 import TabSwitcher from '../shared/TabSwitcher'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useSignUpMutation } from '@/redux/features/auth/auth.api'
+import { toast } from 'sonner'
 
 const SignUpPage = () => {
     const router = useRouter();
     const { t } = useLanguage()
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TSignUpInput>({
+    const [signUp, { isLoading }] = useSignUpMutation()
+
+    const { register, handleSubmit, formState: { errors } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
             displayName: '',
@@ -23,9 +27,19 @@ const SignUpPage = () => {
     })
 
     const onSubmit = async (data: TSignUpInput) => {
-        // Simulate API call
-        console.log('Sign Up Data:', data)
-        router.push("/auth/verify-otp")
+        try {
+            const res = await signUp({
+                profile_name: data.displayName,
+                email: data.email,
+                password: data.password,
+            }).unwrap();
+
+            toast.success(res.message || "Registration successful. Please verify your email.");
+            router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`);
+        } catch (err: any) {
+            const errorMsg = err?.data?.message || err?.data?.detail || "Registration failed. Please try again.";
+            toast.error(errorMsg);
+        }
     }
 
     return (
@@ -69,7 +83,7 @@ const SignUpPage = () => {
                 />
 
                 {/* Submit Button */}
-                <Button type="submit" loading={isSubmitting} className="mt-2 flex items-center justify-center gap-2">
+                <Button type="submit" loading={isLoading} className="mt-2 flex items-center justify-center gap-2">
                     {t.auth.signUpBtn} <FiArrowRight className="w-4 h-4" />
                 </Button>
             </form>
