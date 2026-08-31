@@ -8,6 +8,15 @@ export default function CustomCursor() {
     const ringRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // Disable custom cursor on touch/mobile devices
+        if (
+            typeof window === 'undefined' ||
+            window.matchMedia('(pointer: coarse)').matches ||
+            window.matchMedia('(max-width: 767px)').matches
+        ) {
+            return;
+        }
+
         if (!dotRef.current || !ringRef.current) return;
 
         const xDotTo = gsap.quickTo(dotRef.current, 'x', { duration: 0.1, ease: 'power3.out' });
@@ -90,11 +99,11 @@ export default function CustomCursor() {
         <>
             <div
                 ref={dotRef}
-                className="pointer-events-none fixed top-0 left-0 z-9999 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white transition-opacity"
+                className="hidden md:block pointer-events-none fixed top-0 left-0 z-9999 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white transition-opacity"
             />
             <div
                 ref={ringRef}
-                className="pointer-events-none fixed top-0 left-0 z-9999 size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white transition-opacity"
+                className="hidden md:block pointer-events-none fixed top-0 left-0 z-9999 size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white transition-opacity"
             />
         </>
     );
