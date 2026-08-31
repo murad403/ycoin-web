@@ -31,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ReduxProvider>
           <LanguageProvider>
             <CustomCursor />
-            <Toaster position="top-center" richColors />
+            <Toaster position="top-center" richColors duration={1000} closeButton />
             {children}
           </LanguageProvider>
         </ReduxProvider>

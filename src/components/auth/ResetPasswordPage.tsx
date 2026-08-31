@@ -1,9 +1,9 @@
 'use client'
-import React, { Suspense } from 'react'
+import React, { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FiLock, FiArrowRight } from 'react-icons/fi'
+import { FiLock, FiArrowRight, FiEye, FiEyeOff } from 'react-icons/fi'
 import AuthWrapper from '../wrapper/AuthWrapper'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
@@ -18,6 +18,8 @@ const ResetPasswordContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useLanguage()
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [resetPassword, { isLoading }] = useResetPasswordMutation()
 
     const token = searchParams.get('token') || '';
@@ -64,20 +66,38 @@ const ResetPasswordContent = () => {
                 <Input
                     {...register('password')}
                     label={t.auth.passwordLabel}
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.password?.message}
+                    rightIcon={
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="text-zinc-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                        >
+                            {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                        </button>
+                    }
                 />
 
                 {/* Confirm Password Field */}
                 <Input
                     {...register('confirmPassword')}
                     label={t.auth.confirmPasswordLabel}
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.confirmPassword?.message}
+                    rightIcon={
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="text-zinc-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                        >
+                            {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                        </button>
+                    }
                 />
 
                 {/* Submit Button */}

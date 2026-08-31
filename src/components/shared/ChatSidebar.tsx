@@ -6,6 +6,8 @@ import { FiSearch, FiPlus, FiBell, FiGrid, FiFileText, FiInfo, FiChevronUp, FiCh
 import { MessageCircle } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 
+import { removeToken } from '@/lib/auth'
+
 interface ChatSidebarProps {
   isCollapsed: boolean
   onToggleCollapse: () => void
@@ -37,9 +39,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
     'Find tokens under 20K MC',
   ]
 
-  const handleLogout = () => {
-    console.log('Logout');
-    router.push('/')
+  const handleLogout = async () => {
+    await removeToken();
+    router.push('/');
+    router.refresh();
   }
 
   return (

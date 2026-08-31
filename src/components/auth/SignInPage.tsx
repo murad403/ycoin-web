@@ -1,8 +1,9 @@
 'use client'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi'
+import { FiMail, FiLock, FiArrowRight, FiEye, FiEyeOff } from 'react-icons/fi'
 import AuthWrapper from '../wrapper/AuthWrapper'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
@@ -17,6 +18,7 @@ import { toast } from 'sonner'
 const SignInPage = () => {
     const router = useRouter();
     const { t } = useLanguage()
+    const [showPassword, setShowPassword] = useState(false)
     const [signIn, { isLoading }] = useSignInMutation()
 
     const { register, handleSubmit, formState: { errors } } = useForm<TSignInInput>({
@@ -70,7 +72,7 @@ const SignInPage = () => {
                 <Input
                     {...register('password')}
                     label={t.auth.passwordLabel}
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder={t.auth.passwordPlaceholder}
                     icon={FiLock}
                     error={errors.password?.message}
@@ -81,6 +83,15 @@ const SignInPage = () => {
                         >
                             {t.auth.forgotPassword}
                         </Link>
+                    }
+                    rightIcon={
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="text-zinc-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                        >
+                            {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                        </button>
                     }
                 />
 
