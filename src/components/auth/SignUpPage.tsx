@@ -14,8 +14,8 @@ import { toast } from 'sonner'
 
 const SignUpPage = () => {
     const router = useRouter();
-    const { t } = useLanguage()
-    const [signUp, { isLoading }] = useSignUpMutation()
+    const { t } = useLanguage();
+    const [signUp, { isLoading }] = useSignUpMutation();
 
     const { register, handleSubmit, formState: { errors } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
@@ -28,11 +28,12 @@ const SignUpPage = () => {
 
     const onSubmit = async (data: TSignUpInput) => {
         try {
-            const res = await signUp({
-                profile_name: data.displayName,
-                email: data.email,
-                password: data.password,
-            }).unwrap();
+            const formData = new FormData();
+            formData.append('profile_name', data.displayName);
+            formData.append('email', data.email);
+            formData.append('password', data.password);
+
+            const res = await signUp(formData).unwrap();
 
             toast.success(res.message || "Registration successful. Please verify your email.");
             router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`);

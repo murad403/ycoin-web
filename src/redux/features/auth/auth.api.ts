@@ -16,7 +16,7 @@ import {
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    signUp: builder.mutation<TSignUpResponse, TSignUpRequest>({
+    signUp: builder.mutation<TSignUpResponse, FormData | TSignUpRequest>({
       query: (data) => ({
         url: `/auth/register/`,
         method: "POST",
@@ -53,7 +53,7 @@ const authApi = baseApi.injectEndpoints({
     }),
     resetPassword: builder.mutation<TResetPasswordResponse, TResetPasswordRequest>({
       query: (data) => ({
-        url: `/password-reset/`,
+        url: `/auth/password-reset/`,
         method: "POST",
         body: data,
       }),
