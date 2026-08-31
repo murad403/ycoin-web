@@ -1,7 +1,9 @@
 'use client'
-import React, { useState } from 'react'
-import { FiX, FiUser, FiLock, FiCamera, FiUpload, FiMail, FiCheckCircle, FiSave, FiKey } from 'react-icons/fi'
+import React, { useState, useEffect, useRef } from 'react'
+import { FiX, FiUser, FiLock, FiCamera, FiUpload, FiMail, FiCheckCircle, FiSave, FiKey, FiEye, FiEyeOff } from 'react-icons/fi'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } from '@/redux/features/auth/auth.api'
+import { toast } from 'sonner'
 
 interface ProfileAndSecurityModalProps {
     isOpen: boolean
@@ -11,34 +13,103 @@ interface ProfileAndSecurityModalProps {
 const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpen, onClose }) => {
     const { t } = useLanguage()
     const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile')
-    const [fullName, setFullName] = useState('Zxcv...4x5y')
-    const [email, setEmail] = useState('sovereign.staker@ycoin.ai')
+
+    // Profile state
+    const [fullName, setFullName] = useState('')
+    const [email, setEmail] = useState('')
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+
+    // Password state & visibility toggles
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
-    const [statusMessage, setStatusMessage] = useState<string | null>(null)
+
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+    const [showNewPassword, setShowNewPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // API hooks
+    const { data: profileData } = useGetProfileQuery(undefined, { skip: !isOpen })
+    const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation()
+    const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation()
+
+    useEffect(() => {
+        if (profileData) {
+            setFullName(profileData.profile_name || '')
+            setEmail(profileData.email || '')
+            if (profileData.avatar) {
+                setAvatarPreview(profileData.avatar)
+            }
+        }
+    }, [profileData])
 
     if (!isOpen) return null
 
-    const handleSaveProfile = (e: React.FormEvent) => {
-        e.preventDefault()
-        setStatusMessage('Profile changes saved successfully!')
-        setTimeout(() => setStatusMessage(null), 3000)
-    }
-
-    const handleUpdatePassword = (e: React.FormEvent) => {
-        e.preventDefault()
-        if (newPassword && newPassword === confirmPassword) {
-            setStatusMessage('Password updated successfully!')
-            setCurrentPassword('')
-            setNewPassword('')
-            setConfirmPassword('')
-            setTimeout(() => setStatusMessage(null), 3000)
-        } else if (newPassword !== confirmPassword) {
-            setStatusMessage('Passwords do not match.')
-            setTimeout(() => setStatusMessage(null), 3000)
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setSelectedFile(file)
+            setAvatarPreview(URL.createObjectURL(file))
         }
     }
+
+    const handleSaveProfile = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            const formData = new FormData()
+            formData.append('profile_name', fullName)
+            if (selectedFile) {
+                formData.append('avatar', selectedFile)
+            }
+
+            await updateProfile(formData).unwrap();
+            toast.success("Profile updated successfully!");
+            onClose();
+        } catch (err: any) {
+            const errorMsg = err?.data?.message || err?.data?.detail || "Failed to update profile."
+            toast.error(errorMsg)
+        }
+    }
+
+    const handleUpdatePassword = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!currentPassword) {
+            toast.error("Please enter your current password.")
+            return
+        }
+        if (newPassword !== confirmPassword) {
+            toast.error("New passwords do not match.")
+            return
+        }
+
+        try {
+            const res = await changePassword({
+                current_password: currentPassword,
+                new_password: newPassword,
+            }).unwrap()
+
+            toast.success(res.detail || "Your password has been changed successfully.")
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            onClose();
+        } catch (err: any) {
+            let errorMsg = err?.data?.message || err?.data?.detail
+            if (err?.data?.errors?.new_password) {
+                const passErrors = err.data.errors.new_password
+                errorMsg = Array.isArray(passErrors) ? passErrors.join(' ') : passErrors
+            } else if (err?.data?.errors?.current_password) {
+                const currErrors = err.data.errors.current_password
+                errorMsg = Array.isArray(currErrors) ? currErrors.join(' ') : currErrors
+            }
+            toast.error(errorMsg || "Failed to change password.")
+        }
+    }
+
+    const initialLetter = fullName ? fullName.charAt(0).toUpperCase() : (profileData?.profile_name?.charAt(0).toUpperCase() || 'U')
 
     return (
         <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -47,23 +118,33 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                 {/* Top Header Row: User Info & Close Button */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                        {/* Avatar Letter Badge */}
-                        <div className="w-12 h-12 rounded-2xl bg-button-color text-white font-black text-xl flex items-center justify-center shadow-md shadow-button-color/30 shrink-0">
-                            Z
-                        </div>
+                        {/* Avatar Image / Letter Badge */}
+                        {avatarPreview ? (
+                            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-button-color/40 shadow-md shrink-0 relative">
+                                <img
+                                    src={avatarPreview}
+                                    alt="Profile Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-12 h-12 rounded-2xl bg-button-color text-white font-black text-xl flex items-center justify-center shadow-md shadow-button-color/30 shrink-0">
+                                {initialLetter}
+                            </div>
+                        )}
 
                         {/* User Title Details */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col text-left">
                             <div className="flex items-center gap-2">
                                 <span className="text-base font-bold text-white leading-tight">
-                                    {fullName}
+                                    {fullName || profileData?.profile_name || 'User'}
                                 </span>
                                 <span className="bg-button-color/10 border border-button-color/30 text-button-color text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                     {t.profileModal.freeTier}
                                 </span>
                             </div>
                             <span className="text-xs text-description font-medium mt-0.5">
-                                {email}
+                                {email || profileData?.email || ''}
                             </span>
                         </div>
                     </div>
@@ -83,8 +164,8 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                     <button
                         onClick={() => setActiveTab('profile')}
                         className={`text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer pb-1 -mb-3.5 ${activeTab === 'profile'
-                                ? 'text-button-color border-b-2 border-button-color'
-                                : 'text-description hover:text-white'
+                            ? 'text-button-color border-b-2 border-button-color'
+                            : 'text-description hover:text-white'
                             }`}
                     >
                         <FiUser className="w-4 h-4" />
@@ -94,8 +175,8 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                     <button
                         onClick={() => setActiveTab('security')}
                         className={`text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer pb-1 -mb-3.5 ${activeTab === 'security'
-                                ? 'text-button-color border-b-2 border-button-color'
-                                : 'text-description hover:text-white'
+                            ? 'text-button-color border-b-2 border-button-color'
+                            : 'text-description hover:text-white'
                             }`}
                     >
                         <FiLock className="w-4 h-4" />
@@ -103,16 +184,18 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                     </button>
                 </div>
 
-                {/* Feedback Alert Toast */}
-                {statusMessage && (
-                    <div className="bg-button-color/10 border border-button-color/30 text-button-color text-xs font-semibold px-4 py-2.5 rounded-xl animate-in fade-in">
-                        {statusMessage}
-                    </div>
-                )}
-
                 {/* TAB 1: PROFILE DETAILS & PHOTO */}
                 {activeTab === 'profile' && (
                     <form onSubmit={handleSaveProfile} className="space-y-5">
+                        {/* Hidden File Input */}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
+
                         {/* Image Upload Drag Zone */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2 text-xs font-semibold text-description">
@@ -120,12 +203,15 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                                 <span>{t.profileModal.uploadTitle}</span>
                             </div>
 
-                            <div className="border border-dashed border-border-color hover:border-button-color/60 bg-[#020813] rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group">
+                            <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className="border border-dashed border-border-color hover:border-button-color/60 bg-[#020813] rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                            >
                                 <div className="w-10 h-10 rounded-full bg-button-color/10 border border-button-color/30 flex items-center justify-center text-button-color mb-3 group-hover:scale-110 transition-transform">
                                     <FiUpload className="w-4 h-4" />
                                 </div>
                                 <span className="text-white text-xs font-bold">
-                                    {t.profileModal.uploadPrompt}
+                                    {selectedFile ? selectedFile.name : t.profileModal.uploadPrompt}
                                 </span>
                                 <span className="text-description text-[10px] mt-1 font-medium">
                                     {t.profileModal.uploadSpecs}
@@ -161,18 +247,20 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium"
+                                disabled
+                                readOnly
+                                className="w-full bg-[#020813]/60 border border-border-color/50 text-zinc-400 cursor-not-allowed text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none font-medium"
                             />
                         </div>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99]"
+                            disabled={isUpdatingProfile}
+                            className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99] disabled:opacity-50"
                         >
                             <FiSave className="w-4 h-4" />
-                            <span>{t.profileModal.saveProfile}</span>
+                            <span>{isUpdatingProfile ? "Saving..." : t.profileModal.saveProfile}</span>
                         </button>
                     </form>
                 )}
@@ -181,57 +269,85 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                 {activeTab === 'security' && (
                     <form onSubmit={handleUpdatePassword} className="space-y-5">
                         {/* Current Password */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 text-left">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiKey className="w-3.5 h-3.5 text-button-color" />
                                 <span>{t.profileModal.currentPassword}</span>
                             </label>
-                            <input
-                                type="password"
-                                placeholder={t.profileModal.currentPassword}
-                                value={currentPassword}
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
-                            />
+                            <div className="relative flex items-center">
+                                <input
+                                    type={showCurrentPassword ? "text" : "password"}
+                                    placeholder={t.profileModal.currentPassword}
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl pl-4 pr-10 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                    className="absolute right-3 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    {showCurrentPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         {/* New Password */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 text-left">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiLock className="w-3.5 h-3.5 text-button-color" />
                                 <span>{t.profileModal.newPassword}</span>
                             </label>
-                            <input
-                                type="password"
-                                placeholder={t.profileModal.newPassword}
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
-                            />
+                            <div className="relative flex items-center">
+                                <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    placeholder={t.profileModal.newPassword}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl pl-4 pr-10 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className="absolute right-3 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    {showNewPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Confirm New Password */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 text-left">
                             <label className="flex items-center gap-2 text-xs font-semibold text-description">
                                 <FiLock className="w-3.5 h-3.5 text-button-color" />
                                 <span>{t.profileModal.confirmPassword}</span>
                             </label>
-                            <input
-                                type="password"
-                                placeholder={t.profileModal.confirmPassword}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
-                            />
+                            <div className="relative flex items-center">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder={t.profileModal.confirmPassword}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full bg-[#020813] border border-border-color focus:border-button-color text-white text-xs sm:text-sm rounded-xl pl-4 pr-10 py-3 focus:outline-none transition-colors placeholder:text-zinc-600 font-medium"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                >
+                                    {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99]"
+                            disabled={isChangingPassword}
+                            className="w-full py-3 bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-button-color/20 active:scale-[0.99] disabled:opacity-50"
                         >
                             <FiLock className="w-4 h-4" />
-                            <span>{t.profileModal.updatePassword}</span>
+                            <span>{isChangingPassword ? "Updating..." : t.profileModal.updatePassword}</span>
                         </button>
                     </form>
                 )}

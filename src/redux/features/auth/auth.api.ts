@@ -12,6 +12,9 @@ import {
   TForgotPasswordVerifyOtpResponse,
   TResetPasswordRequest,
   TResetPasswordResponse,
+  TChangePasswordRequest,
+  TChangePasswordResponse,
+  TProfileResponse,
 } from "./auth.type";
 
 const authApi = baseApi.injectEndpoints({
@@ -58,6 +61,30 @@ const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    changePassword: builder.mutation<TChangePasswordResponse, TChangePasswordRequest>({
+      query: (data) => ({
+        url: `/auth/change-password/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    // profile*************************************
+    getProfile: builder.query<TProfileResponse, void>({
+      query: () => ({
+        url: `/profile/`,
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
+    }),
+    updateProfile: builder.mutation<TProfileResponse, FormData>({
+      query: (data) => ({
+        url: `/profile/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
 });
 
@@ -68,6 +95,9 @@ export const {
   useForgotPasswordMutation,
   useForgotPasswordVerifyOtpMutation,
   useResetPasswordMutation,
+  useChangePasswordMutation,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
 } = authApi;
 
 export default authApi;

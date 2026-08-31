@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FiSearch, FiPlus, FiBell, FiGrid, FiFileText, FiInfo, FiChevronUp, FiChevronDown, FiUser, FiLogOut, FiChevronsLeft, FiChevronsRight, FiX } from 'react-icons/fi'
 import { MessageCircle } from 'lucide-react'
-import { useLanguage } from '@/i18n/LanguageContext'
-
 import { removeToken } from '@/lib/auth'
+import { useGetProfileQuery } from '@/redux/features/auth/auth.api'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 interface ChatSidebarProps {
   isCollapsed: boolean
@@ -20,7 +20,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
   const pathname = usePathname();
   const router = useRouter();
   const [isChatsOpen, setIsChatsOpen] = useState(true);
-  const { t } = useLanguage()
+  const { t } = useLanguage();
+  const { data: profileData } = useGetProfileQuery();
 
   const menuItems = [
     { label: t.chat.alerts, icon: FiBell, href: '/alerts' },
@@ -207,12 +208,18 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
               onClick={onOpenProfile}
               className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
             >
-              <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0 group-hover:bg-button-color/30 transition-colors">
-                <FiUser className="w-4 h-4" />
-              </div>
+              {profileData?.avatar ? (
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-button-color/40 shrink-0">
+                  <img src={profileData.avatar} alt="User Avatar" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0 group-hover:bg-button-color/30 transition-colors">
+                  <FiUser className="w-4 h-4" />
+                </div>
+              )}
               <div className="flex flex-col text-left">
-                <span className="text-white text-xs font-bold font-mono tracking-tight group-hover:text-button-color transition-colors">
-                  Zxcv...4x5y
+                <span className="text-white text-xs font-bold font-mono tracking-tight group-hover:text-button-color transition-colors truncate max-w-30">
+                  {profileData?.profile_name || 'User'}
                 </span>
                 <span className="text-description text-[10px] font-medium">
                   Free
