@@ -11,78 +11,78 @@ interface ProfileAndSecurityModalProps {
 }
 
 const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpen, onClose }) => {
-    const { t } = useLanguage()
-    const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile')
+    const { t } = useLanguage();
+    const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
 
     // Profile state
-    const [fullName, setFullName] = useState('')
-    const [email, setEmail] = useState('')
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     // Password state & visibility toggles
-    const [currentPassword, setCurrentPassword] = useState('')
-    const [newPassword, setNewPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-    const [showNewPassword, setShowNewPassword] = useState(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const fileInputRef = useRef<HTMLInputElement>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // API hooks
     const { data: profileData } = useGetProfileQuery(undefined, { skip: !isOpen })
-    const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation()
-    const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation()
+    const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
+    const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
 
     useEffect(() => {
         if (profileData) {
-            setFullName(profileData.profile_name || '')
-            setEmail(profileData.email || '')
+            setFullName(profileData.profile_name || '');
+            setEmail(profileData.email || '');
             if (profileData.avatar) {
-                setAvatarPreview(profileData.avatar)
+                setAvatarPreview(profileData.avatar);
             }
         }
-    }, [profileData])
+    }, [profileData]);
 
-    if (!isOpen) return null
+    if (!isOpen) return null;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
+        const file = e.target.files?.[0];
         if (file) {
-            setSelectedFile(file)
-            setAvatarPreview(URL.createObjectURL(file))
+            setSelectedFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
         }
     }
 
     const handleSaveProfile = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
-            const formData = new FormData()
-            formData.append('profile_name', fullName)
+            const formData = new FormData();
+            formData.append('profile_name', fullName);
             if (selectedFile) {
-                formData.append('avatar', selectedFile)
+                formData.append('avatar', selectedFile);
             }
 
             await updateProfile(formData).unwrap();
             toast.success("Profile updated successfully!");
             onClose();
         } catch (err: any) {
-            const errorMsg = err?.data?.message || err?.data?.detail || "Failed to update profile."
-            toast.error(errorMsg)
+            const errorMsg = err?.data?.message || err?.data?.detail || "Failed to update profile.";
+            toast.error(errorMsg);
         }
     }
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
         if (!currentPassword) {
-            toast.error("Please enter your current password.")
-            return
+            toast.error("Please enter your current password.");
+            return;
         }
         if (newPassword !== confirmPassword) {
-            toast.error("New passwords do not match.")
-            return
+            toast.error("New passwords do not match.");
+            return;
         }
 
         try {
@@ -91,25 +91,25 @@ const ProfileAndSecurityModal: React.FC<ProfileAndSecurityModalProps> = ({ isOpe
                 new_password: newPassword,
             }).unwrap()
 
-            toast.success(res.detail || "Your password has been changed successfully.")
+            toast.success(res.detail || "Your password has been changed successfully.");
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
             onClose();
         } catch (err: any) {
-            let errorMsg = err?.data?.message || err?.data?.detail
+            let errorMsg = err?.data?.message || err?.data?.detail;
             if (err?.data?.errors?.new_password) {
-                const passErrors = err.data.errors.new_password
-                errorMsg = Array.isArray(passErrors) ? passErrors.join(' ') : passErrors
+                const passErrors = err.data.errors.new_password;
+                errorMsg = Array.isArray(passErrors) ? passErrors.join(' ') : passErrors;
             } else if (err?.data?.errors?.current_password) {
-                const currErrors = err.data.errors.current_password
-                errorMsg = Array.isArray(currErrors) ? currErrors.join(' ') : currErrors
+                const currErrors = err.data.errors.current_password;
+                errorMsg = Array.isArray(currErrors) ? currErrors.join(' ') : currErrors;
             }
-            toast.error(errorMsg || "Failed to change password.")
+            toast.error(errorMsg || "Failed to change password.");
         }
     }
 
-    const initialLetter = fullName ? fullName.charAt(0).toUpperCase() : (profileData?.profile_name?.charAt(0).toUpperCase() || 'U')
+    const initialLetter = fullName ? fullName.charAt(0).toUpperCase() : (profileData?.profile_name?.charAt(0).toUpperCase() || 'U');
 
     return (
         <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
