@@ -1,7 +1,9 @@
-'use client'
-import { FiShield } from 'react-icons/fi'
-import { useRetrievePrivacyPolicyQuery } from '@/redux/features/legal/legal.api'
-import { formatDate } from '@/utils/formatter'
+'use client';
+import { FiShield } from 'react-icons/fi';
+import { useRetrievePrivacyPolicyQuery } from '@/redux/features/legal/legal.api';
+import { formatDate } from '@/utils/formatter';
+import DocumentSkeleton from '@/components/shared/DocumentSkeleton';
+
 
 const Page = () => {
   const { data, isLoading, isError } = useRetrievePrivacyPolicyQuery();
@@ -17,14 +19,21 @@ const Page = () => {
             <div className="p-3 bg-[#020813] border border-border-color rounded-2xl flex items-center justify-center text-button-color shadow-[0_0_20px_rgba(0,113,227,0.15)] shrink-0">
               <FiShield className="w-6 h-6 text-button-color" />
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                {data?.document_type_display || 'Privacy Policy'}
-              </h1>
-              <p className="text-xs md:text-sm text-description mt-1 font-medium">
-                Zero-Knowledge Data Policy {formattedDate ? `• Last Updated: ${formattedDate}` : ''}
-              </p>
-            </div>
+            {isLoading ? (
+              <div className="space-y-2 animate-pulse">
+                <div className="h-7 w-48 bg-zinc-800/80 rounded-lg"></div>
+                <div className="h-4 w-64 bg-zinc-800/50 rounded-md"></div>
+              </div>
+            ) : (
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                  {data?.document_type_display || 'Privacy Policy'}
+                </h1>
+                <p className="text-xs md:text-sm text-description mt-1 font-medium">
+                  Zero-Knowledge Data Policy {formattedDate ? `• Last Updated: ${formattedDate}` : ''}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="border-b border-border-color/60" />
@@ -32,7 +41,7 @@ const Page = () => {
           {/* Privacy Policy Document Card */}
           <div className="border border-border-color/80 rounded-2xl bg-[#041020] p-6 md:p-8 space-y-6 shadow-lg">
             {isLoading ? (
-              <div className="py-12 text-center text-description text-sm font-medium">Loading Privacy Policy...</div>
+              <DocumentSkeleton />
             ) : isError ? (
               <div className="py-12 text-center text-red-400 text-sm font-medium">Failed to load Privacy Policy.</div>
             ) : (
