@@ -1,33 +1,11 @@
 'use client'
 import { FiShield } from 'react-icons/fi'
+import { useRetrievePrivacyPolicyQuery } from '@/redux/features/legal/legal.api'
+import { formatDate } from '@/utils/formatter'
 
 const Page = () => {
-  const sections = [
-    {
-      id: 1,
-      title: 'Sovereign Zero-Knowledge Architecture',
-      content:
-        'YCOIN Sovereign AI is built on privacy-first principles. We do not sell, license, or monetize your personal information or chat queries to third-party advertisers. All terminal interactions are processed through cryptographic node tunnels.',
-    },
-    {
-      id: 2,
-      title: 'Data Collection & Local Storage',
-      content:
-        "Your profile settings, custom avatars, and alert triggers are stored locally in your browser's encrypted state and verified with zero-knowledge token headers when interacting with authenticated API endpoints.",
-    },
-    {
-      id: 3,
-      title: 'Image & Asset Privacy',
-      content:
-        'Images uploaded via the Image Upload Studio or Profile Avatar editor are stored locally or via encrypted Base64 state. They are never indexed publicly or shared with external analytics trackers.',
-    },
-    {
-      id: 4,
-      title: 'Your Security Controls',
-      content:
-        'You retain full sovereign ownership over your account data. You can clear your session cookies, delete profile images, or disconnect your wallet address at any time with one click.',
-    },
-  ]
+  const { data, isLoading, isError } = useRetrievePrivacyPolicyQuery();
+  const formattedDate = formatDate(data?.updated_at);
 
   return (
     <div className="flex-1 flex flex-col h-full relative overflow-hidden justify-between">
@@ -41,10 +19,10 @@ const Page = () => {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                Privacy Policy
+                {data?.document_type_display || 'Privacy Policy'}
               </h1>
               <p className="text-xs md:text-sm text-description mt-1 font-medium">
-                Zero-Knowledge Data Policy • Last Updated: August 2026
+                Zero-Knowledge Data Policy {formattedDate ? `• Last Updated: ${formattedDate}` : ''}
               </p>
             </div>
           </div>
@@ -53,25 +31,17 @@ const Page = () => {
 
           {/* Privacy Policy Document Card */}
           <div className="border border-border-color/80 rounded-2xl bg-[#041020] p-6 md:p-8 space-y-6 shadow-lg">
-            <div className="space-y-6">
-              {sections.map((section) => (
-                <div key={section.id} className="space-y-2">
-                  <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
-                    <FiShield className="w-4 h-4 text-button-color shrink-0" />
-                    <span className="text-heading">{section.id}.</span> {section.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-description leading-relaxed pl-6">
-                    {section.content}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-border-color/30 pt-4 mt-6 flex justify-between items-center">
-              <span className="text-[11px] sm:text-xs font-mono text-description font-medium">
-                Encrypted Hash: 0x9f83...bc01
-              </span>
-            </div>
+            {isLoading ? (
+              <div className="py-12 text-center text-description text-sm font-medium">Loading Privacy Policy...</div>
+            ) : isError ? (
+              <div className="py-12 text-center text-red-400 text-sm font-medium">Failed to load Privacy Policy.</div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-xs sm:text-sm text-description leading-relaxed whitespace-pre-wrap">
+                  {data?.content}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

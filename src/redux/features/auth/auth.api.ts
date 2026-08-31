@@ -100,4 +100,3 @@ export const {
   useUpdateProfileMutation,
 } = authApi;
 
-export default authApi;
