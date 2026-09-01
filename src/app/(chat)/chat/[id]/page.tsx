@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect, use } from 'react'
 import { FiChevronDown, FiCpu, FiUser, FiArrowUp } from 'react-icons/fi'
 import VoiceInput from '@/components/shared/VoiceInput'
 import { useRetrieveMessagesQuery } from '@/redux/features/chat/chat.api'
-import DocumentSkeleton from '@/components/shared/DocumentSkeleton'
 import { formatTimestamp } from '@/utils/formatter'
 
 interface ChatPageProps {
@@ -28,7 +27,6 @@ const Page = ({ params }: ChatPageProps) => {
     const handleSend = (e: React.FormEvent) => {
         e.preventDefault()
         if (!input.trim()) return
-        // Prompt submission logic (ready to connect with send message API mutation)
         setInput('')
     }
 
@@ -40,9 +38,30 @@ const Page = ({ params }: ChatPageProps) => {
             {/* Messages Scroll Area */}
             <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 max-w-4xl mx-auto w-full scrollbar-thin">
                 {isLoading ? (
-                    <div className="flex flex-col gap-4 py-8">
-                        <DocumentSkeleton />
-                        <DocumentSkeleton />
+                    <div className="flex flex-col gap-6 py-4">
+                        {/* Skeleton 1: User message (Right) */}
+                        <div className="flex items-start gap-3 justify-end">
+                            <div className="w-48 sm:w-64 h-14 bg-button-color/20 border border-button-color/30 rounded-2xl rounded-tr-none animate-pulse" />
+                            <div className="w-8 h-8 rounded-xl bg-zinc-800/80 border border-zinc-700/50 animate-pulse shrink-0" />
+                        </div>
+
+                        {/* Skeleton 2: Assistant message (Left) */}
+                        <div className="flex items-start gap-3 justify-start">
+                            <div className="w-8 h-8 rounded-xl bg-button-color/20 border border-button-color/40 animate-pulse shrink-0" />
+                            <div className="w-64 sm:w-96 h-28 bg-[#090D14] border border-border-color rounded-2xl rounded-tl-none animate-pulse" />
+                        </div>
+
+                        {/* Skeleton 3: User message (Right) */}
+                        <div className="flex items-start gap-3 justify-end">
+                            <div className="w-40 sm:w-56 h-12 bg-button-color/20 border border-button-color/30 rounded-2xl rounded-tr-none animate-pulse" />
+                            <div className="w-8 h-8 rounded-xl bg-zinc-800/80 border border-zinc-700/50 animate-pulse shrink-0" />
+                        </div>
+
+                        {/* Skeleton 4: Assistant message (Left) */}
+                        <div className="flex items-start gap-3 justify-start">
+                            <div className="w-8 h-8 rounded-xl bg-button-color/20 border border-button-color/40 animate-pulse shrink-0" />
+                            <div className="w-72 sm:w-md h-36 bg-[#090D14] border border-border-color rounded-2xl rounded-tl-none animate-pulse" />
+                        </div>
                     </div>
                 ) : isError ? (
                     <div className="flex flex-col items-center justify-center text-center p-8 bg-[#020813] border border-border-color rounded-2xl my-auto">

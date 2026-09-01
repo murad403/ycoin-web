@@ -10,6 +10,21 @@ const chatApi = baseApi.injectEndpoints({
             }),
             providesTags: ["Chat"]
         }),
+        renameTitle: builder.mutation<TConversation, { id: string; title: string }>({
+            query: ({ id, title }) => ({
+                url: `/conversations/${id}/`,
+                method: "PATCH",
+                body: { title },
+            }),
+            invalidatesTags: ["Chat"]
+        }),
+        deleteConversation: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/conversations/${id}/`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Chat"]
+        }),
         retrieveMessages: builder.query<TChatMessage[], string>({
             query: (id) => ({
                 url: `/messages/?conversation_id=${id}`,
@@ -22,5 +37,7 @@ const chatApi = baseApi.injectEndpoints({
 
 export const {
     useRetrieveConversationsListQuery,
+    useRenameTitleMutation,
+    useDeleteConversationMutation,
     useRetrieveMessagesQuery,
-} = chatApi;
+} = chatApi;
