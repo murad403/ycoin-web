@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -25,6 +25,7 @@ import { removeToken } from '@/lib/auth'
 import { useGetProfileQuery } from '@/redux/features/auth/auth.api'
 import {
   useRetrieveConversationsListQuery,
+  useLazyRetrieveConversationsListQuery,
   useRenameTitleMutation,
   useDeleteConversationMutation,
 } from '@/redux/features/chat/chat.api'
@@ -51,9 +52,40 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const router = useRouter()
   const [isChatsOpen, setIsChatsOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [hasNextPage, setHasNextPage] = useState(false)
+  const [isFetchingMore, setIsFetchingMore] = useState(false)
+  const [allConversations, setAllConversations] = useState<TConversation[]>([])
+
+  const chatsContainerRef = useRef<HTMLDivElement>(null)
+
   const { t } = useLanguage()
   const { data: profileData } = useGetProfileQuery()
-  const { data: conversations, isLoading: isConversationsLoading } = useRetrieveConversationsListQuery()
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  // Fetch Page 1 or search results
+  const { data: initialData, isLoading: isConversationsLoading } = useRetrieveConversationsListQuery({
+    search: debouncedSearch,
+    page: 1,
+  })
+  const [fetchMoreConversations] = useLazyRetrieveConversationsListQuery()
+
+  // Sync initial and search result data
+  useEffect(() => {
+    if (initialData) {
+      setAllConversations(initialData.results || [])
+      setHasNextPage(!!initialData.next)
+      setPage(1)
+    }
+  }, [initialData])
 
   const [renameTitleApi, { isLoading: isRenaming }] = useRenameTitleMutation()
   const [deleteConversationApi, { isLoading: isDeleting }] = useDeleteConversationMutation()
@@ -63,9 +95,38 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const [modalView, setModalView] = useState<'menu' | 'rename' | 'delete' | null>(null)
   const [newTitleInput, setNewTitleInput] = useState('')
 
-  const filteredConversations = conversations?.filter((chat) =>
-    chat.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Infinite Scroll Down handler for Sidebar Conversations
+  const handleSidebarScroll = async () => {
+    const container = chatsContainerRef.current
+    if (!container || isFetchingMore || !hasNextPage) return
+
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 30) {
+      setIsFetchingMore(true)
+      try {
+        const nextPage = page + 1
+        const res = await fetchMoreConversations({
+          search: debouncedSearch,
+          page: nextPage,
+        }).unwrap()
+
+        const newResults = res.results || []
+        setHasNextPage(!!res.next)
+        setPage(nextPage)
+
+        if (newResults.length > 0) {
+          setAllConversations((prev) => {
+            const existingIds = new Set(prev.map((c) => c.id))
+            const uniqueNew = newResults.filter((c) => !existingIds.has(c.id))
+            return [...prev, ...uniqueNew]
+          })
+        }
+      } catch (err) {
+        console.error('Error fetching more conversations:', err)
+      } finally {
+        setIsFetchingMore(false)
+      }
+    }
+  }
 
   const menuItems = [
     { label: t.chat.alerts, icon: FiBell, href: '/alerts' },
@@ -255,7 +316,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </button>
 
             {isChatsOpen && (
-              <div className="flex flex-col gap-1 pl-4 mt-1 overflow-y-auto no-scrollbar">
+              <div
+                ref={chatsContainerRef}
+                onScroll={handleSidebarScroll}
+                className="flex flex-col gap-1 pl-4 mt-1 overflow-y-auto no-scrollbar"
+              >
                 {isConversationsLoading ? (
                   <div className="flex flex-col gap-3 py-1 pr-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -265,38 +330,44 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                       />
                     ))}
                   </div>
-                ) : filteredConversations && filteredConversations.length > 0 ? (
-                  filteredConversations.map((chat) => {
-                    const isActive = pathname === `/chat/${chat.id}`
-                    return (
-                      <div
-                        key={chat.id}
-                        className={`group relative flex items-center justify-between py-1.5 px-3 rounded-lg transition-colors select-none shrink-0 ${
-                          isActive
-                            ? 'text-white bg-button-color/10 font-semibold border-l-2 border-button-color'
-                            : 'text-description hover:text-white hover:bg-zinc-900/40'
-                        }`}
-                      >
-                        <Link
-                          href={`/chat/${chat.id}`}
-                          onClick={onCloseMobile}
-                          className="truncate flex-1 text-[13px] font-medium pr-2"
-                          title={chat.title}
+                ) : allConversations && allConversations.length > 0 ? (
+                  <>
+                    {allConversations.map((chat) => {
+                      const isActive = pathname === `/chat/${chat.id}`
+                      return (
+                        <div
+                          key={chat.id}
+                          className={`group relative flex items-center justify-between py-1.5 px-3 rounded-lg transition-colors select-none shrink-0 ${
+                            isActive
+                              ? 'text-white bg-button-color/10 font-semibold border-l-2 border-button-color'
+                              : 'text-description hover:text-white hover:bg-zinc-900/40'
+                          }`}
                         >
-                          {chat.title || 'Untitled Chat'}
-                        </Link>
+                          <Link
+                            href={`/chat/${chat.id}`}
+                            onClick={onCloseMobile}
+                            className="truncate flex-1 text-[13px] font-medium pr-2"
+                            title={chat.title}
+                          >
+                            {chat.title || 'Untitled Chat'}
+                          </Link>
 
-                        <button
-                          type="button"
-                          onClick={(e) => handleOpenOptions(e, chat)}
-                          className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-md text-description hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shrink-0"
-                          title="Options"
-                        >
-                          <FiMoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )
-                  })
+                          <button
+                            type="button"
+                            onClick={(e) => handleOpenOptions(e, chat)}
+                            className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-md text-description hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shrink-0"
+                            title="Options"
+                          >
+                            <FiMoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )
+                    })}
+
+                    {isFetchingMore && (
+                      <div className="h-6 w-full rounded-lg bg-zinc-900/80 border border-zinc-800/50 animate-pulse my-1" />
+                    )}
+                  </>
                 ) : (
                   <div className="text-description/60 text-xs py-2 px-3">No conversations found</div>
                 )}
