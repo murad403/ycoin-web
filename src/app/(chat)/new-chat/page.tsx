@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, Suspense } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import logoImg from '@/assets/images/logo.png'
 import chatshowcaseImg from '@/assets/images/chatshowcase.png'
 import { FiChevronDown, FiCpu, FiUser, FiArrowUp } from 'react-icons/fi'
@@ -17,14 +17,19 @@ type TMessage = {
   timestamp: string
 }
 
-const NewChatPage = () => {
+const NewChatContent = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialPrompt = searchParams.get('prompt')
+
   const [messages, setMessages] = useState<TMessage[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [statusText, setStatusText] = useState('')
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const newConversationIdRef = useRef<string | null>(null)
+  const autoSubmitTriggeredRef = useRef(false)
 
   const { sendQuery, status: socketStatus } = useChatSocket({
     onStatusChange: (status) => {
@@ -59,6 +64,38 @@ const NewChatPage = () => {
       setStatusText('')
     },
   })
+
+  // Auto trigger initialPrompt from URL search params if present
+  useEffect(() => {
+    if (
+      initialPrompt &&
+      !autoSubmitTriggeredRef.current &&
+      socketStatus === 'connected' &&
+      messages.length === 0
+    ) {
+      autoSubmitTriggeredRef.current = true
+      const userPrompt = initialPrompt.trim()
+      setIsLoading(true)
+      setStatusText('Generating Response...')
+
+      const userMessage: TMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: userPrompt,
+        timestamp: formatTimestamp(new Date().toISOString()),
+      }
+
+      const assistantMessage: TMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '',
+        timestamp: formatTimestamp(new Date().toISOString()),
+      }
+
+      setMessages([userMessage, assistantMessage])
+      sendQuery(userPrompt)
+    }
+  }, [initialPrompt, socketStatus, messages.length, sendQuery])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -240,6 +277,14 @@ const NewChatPage = () => {
         </form>
       </div>
     </div>
+  )
+}
+
+const NewChatPage = () => {
+  return (
+    <Suspense fallback={<div className="flex-1 bg-black" />}>
+      <NewChatContent />
+    </Suspense>
   )
 }
 

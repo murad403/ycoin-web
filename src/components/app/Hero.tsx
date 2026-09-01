@@ -1,19 +1,33 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import heroImg from '@/assets/images/hero.png'
 import { FiBell, FiSend, FiShield } from 'react-icons/fi'
 import { FaBitcoin, FaXmark } from 'react-icons/fa6'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { getCurrentUser } from '@/lib/auth'
 
 const Hero = () => {
     const router = useRouter()
     const { t } = useLanguage()
+    const [input, setInput] = useState('')
 
-    const handleGetStarted = (e: React.FormEvent) => {
+    const handleGetStarted = async (e: React.FormEvent) => {
         e.preventDefault()
-        router.push('/auth/sign-up')
+        const prompt = input.trim()
+        const { access } = await getCurrentUser()
+
+        if (!access) {
+            router.push('/auth/sign-in')
+            return
+        }
+
+        if (prompt) {
+            router.push(`/new-chat?prompt=${encodeURIComponent(prompt)}`)
+        } else {
+            router.push('/new-chat')
+        }
     }
 
     return (
@@ -51,16 +65,18 @@ const Hero = () => {
                         <form onSubmit={handleGetStarted} className="w-full max-w-lg flex bg-[#020813] border border-border-color rounded-xl p-1.5 shadow-[0_0_30px_rgba(0,0,0,0.6)] mb-12 focus-within:border-[#0071E3] transition-all duration-200">
                             <input
                                 type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
                                 placeholder={t.hero.inputPlaceholder}
                                 className="flex-1 bg-transparent text-white px-4 py-3 text-xs sm:text-sm placeholder-zinc-600 focus:outline-none"
                             />
-                                <button
-                                    type="submit"
-                                    className="bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center gap-2 select-none active:scale-[0.98] transition-all shrink-0 cursor-pointer"
-                                >
-                                    <FiSend className="w-3.5 h-3.5" />
-                                    {t.hero.getStarted}
-                                </button>
+                            <button
+                                type="submit"
+                                className="bg-button-color hover:bg-button-color/90 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-lg flex items-center gap-2 select-none active:scale-[0.98] transition-all shrink-0 cursor-pointer"
+                            >
+                                <FiSend className="w-3.5 h-3.5" />
+                                {t.hero.getStarted}
+                            </button>
                         </form>
 
                         {/* Trusted By */}
