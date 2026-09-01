@@ -36,6 +36,7 @@ const Page = ({ params }: ChatPageProps) => {
   const [isFetchingOlder, setIsFetchingOlder] = useState(false)
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
+  const [statusText, setStatusText] = useState('')
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -49,6 +50,7 @@ const Page = ({ params }: ChatPageProps) => {
       setDisplayedMessages([])
       setNextCursor(null)
       setIsStreaming(false)
+      setStatusText('')
       isInitialLoadRef.current = true
     }
   }, [id])
@@ -141,6 +143,9 @@ const Page = ({ params }: ChatPageProps) => {
 
   // Real-time WebSocket setup
   const { sendQuery } = useChatSocket({
+    onStatusChange: (status) => {
+      setStatusText(status)
+    },
     onToken: (data) => {
       setDisplayedMessages((prev) =>
         prev.map((msg, idx) =>
@@ -156,9 +161,11 @@ const Page = ({ params }: ChatPageProps) => {
     },
     onCompleted: () => {
       setIsStreaming(false)
+      setStatusText('')
     },
     onError: () => {
       setIsStreaming(false)
+      setStatusText('')
     },
   })
 
@@ -169,6 +176,7 @@ const Page = ({ params }: ChatPageProps) => {
     const userPrompt = input.trim()
     setInput('')
     setIsStreaming(true)
+    setStatusText('Generating Response...')
 
     const userMsg: TChatMessage = {
       id: Date.now().toString(),
@@ -268,10 +276,11 @@ const Page = ({ params }: ChatPageProps) => {
                 {msg.content ? (
                   <p className="whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                 ) : msg.role === 'assistant' && isStreaming ? (
-                  <div className="flex items-center gap-1.5 py-1">
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce" />
+                  <div className="flex items-center gap-2 py-1 select-none">
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-ping shrink-0" />
+                    <span className="text-xs text-description font-medium animate-pulse">
+                      {statusText || 'Generating Response...'}
+                    </span>
                   </div>
                 ) : null}
                 <span

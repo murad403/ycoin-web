@@ -22,10 +22,14 @@ const NewChatPage = () => {
   const [messages, setMessages] = useState<TMessage[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [statusText, setStatusText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const newConversationIdRef = useRef<string | null>(null)
 
   const { sendQuery, status: socketStatus } = useChatSocket({
+    onStatusChange: (status) => {
+      setStatusText(status)
+    },
     onToken: (data) => {
       if (data.conversation_id) {
         newConversationIdRef.current = data.conversation_id
@@ -44,6 +48,7 @@ const NewChatPage = () => {
     },
     onCompleted: (data) => {
       setIsLoading(false)
+      setStatusText('')
       const convId = data.conversation_id || newConversationIdRef.current
       if (convId) {
         router.push(`/chat/${convId}`)
@@ -51,6 +56,7 @@ const NewChatPage = () => {
     },
     onError: () => {
       setIsLoading(false)
+      setStatusText('')
     },
   })
 
@@ -69,6 +75,7 @@ const NewChatPage = () => {
     const userPrompt = input.trim()
     setInput('')
     setIsLoading(true)
+    setStatusText('Generating Response...')
 
     const userMessage: TMessage = {
       id: Date.now().toString(),
@@ -154,10 +161,11 @@ const NewChatPage = () => {
                 {msg.content ? (
                   <p className="whitespace-pre-wrap wrap-break-word">{msg.content}</p>
                 ) : msg.role === 'assistant' && isLoading ? (
-                  <div className="flex items-center gap-1.5 py-1">
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce" />
+                  <div className="flex items-center gap-2 py-1 select-none">
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-ping shrink-0" />
+                    <span className="text-xs text-description font-medium animate-pulse">
+                      {statusText || 'Generating Response...'}
+                    </span>
                   </div>
                 ) : null}
                 <span
