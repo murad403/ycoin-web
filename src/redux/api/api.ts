@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 const baseQuery = fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: async (headers) => {
@@ -13,12 +12,10 @@ const baseQuery = fetchBaseQuery({
     }
 })
 
-
-
 const baseApi = createApi({
     reducerPath: "baseApi",
     baseQuery: baseQuery,
-    tagTypes: ["Profile", "Chat"],
+    tagTypes: ["Profile", "Chat", "Conversations", "Messages"],
     endpoints: () => ({})
 })
 

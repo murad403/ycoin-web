@@ -33,7 +33,11 @@ const NewChatPage = () => {
       setMessages((prev) =>
         prev.map((msg, idx) =>
           idx === prev.length - 1 && msg.role === 'assistant'
-            ? { ...msg, content: msg.content + data.content }
+            ? {
+                ...msg,
+                id: data.message_id || msg.id,
+                content: msg.content + data.content,
+              }
             : msg
         )
       )
@@ -147,9 +151,15 @@ const NewChatPage = () => {
                     : 'bg-[#090D14] border border-border-color text-zinc-200 rounded-tl-none'
                 }`}
               >
-                <p className="whitespace-pre-wrap wrap-break-word">
-                  {msg.content || (isLoading && msg.role === 'assistant' ? '...' : '')}
-                </p>
+                {msg.content ? (
+                  <p className="whitespace-pre-wrap wrap-break-word">{msg.content}</p>
+                ) : msg.role === 'assistant' && isLoading ? (
+                  <div className="flex items-center gap-1.5 py-1">
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce" />
+                  </div>
+                ) : null}
                 <span
                   className={`text-[10px] block mt-2 text-right ${
                     msg.role === 'user' ? 'text-blue-200' : 'text-description'
@@ -167,18 +177,6 @@ const NewChatPage = () => {
               )}
             </div>
           ))}
-
-          {isLoading && messages[messages.length - 1]?.content === '' && (
-            <div className="flex items-center gap-3 justify-start">
-              <div className="w-8 h-8 rounded-xl bg-button-color/20 border border-button-color/40 flex items-center justify-center text-button-color shrink-0">
-                <FiCpu className="w-4 h-4 animate-pulse" />
-              </div>
-              <div className="bg-[#090D14] border border-border-color px-4 py-3 rounded-2xl rounded-tl-none text-xs text-description flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-button-color animate-ping" />
-                <span>YCOIN AI is processing response...</span>
-              </div>
-            </div>
-          )}
 
           <div ref={messagesEndRef} />
         </div>

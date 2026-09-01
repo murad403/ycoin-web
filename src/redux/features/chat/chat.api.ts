@@ -45,7 +45,7 @@ const chatApi = baseApi.injectEndpoints({
                     results: response?.results || [],
                 };
             },
-            providesTags: ["Chat"],
+            providesTags: ["Conversations"],
         }),
         renameTitle: builder.mutation<TConversation, { id: string; title: string }>({
             query: ({ id, title }) => ({
@@ -53,14 +53,14 @@ const chatApi = baseApi.injectEndpoints({
                 method: "PATCH",
                 body: { title },
             }),
-            invalidatesTags: ["Chat"],
+            invalidatesTags: ["Conversations"],
         }),
         deleteConversation: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/conversations/${id}/`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Chat"],
+            invalidatesTags: ["Conversations", "Messages"],
         }),
         retrieveMessages: builder.query<
             TPaginatedMessagesResponse,
@@ -97,7 +97,7 @@ const chatApi = baseApi.injectEndpoints({
                     results: sorted,
                 };
             },
-            providesTags: ["Chat"],
+            providesTags: ["Messages"],
         }),
     }),
 });

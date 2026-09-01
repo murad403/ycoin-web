@@ -145,7 +145,11 @@ const Page = ({ params }: ChatPageProps) => {
       setDisplayedMessages((prev) =>
         prev.map((msg, idx) =>
           idx === prev.length - 1 && msg.role === 'assistant'
-            ? { ...msg, content: msg.content + data.content }
+            ? {
+                ...msg,
+                id: data.message_id || msg.id,
+                content: msg.content + data.content,
+              }
             : msg
         )
       )
@@ -261,9 +265,15 @@ const Page = ({ params }: ChatPageProps) => {
                     : 'bg-[#090D14] border border-border-color text-zinc-200 rounded-tl-none'
                 }`}
               >
-                <p className="whitespace-pre-wrap wrap-break-word">
-                  {msg.content || (isStreaming && msg.role === 'assistant' ? '...' : '')}
-                </p>
+                {msg.content ? (
+                  <p className="whitespace-pre-wrap wrap-break-word">{msg.content}</p>
+                ) : msg.role === 'assistant' && isStreaming ? (
+                  <div className="flex items-center gap-1.5 py-1">
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-2 h-2 rounded-full bg-button-color animate-bounce" />
+                  </div>
+                ) : null}
                 <span
                   className={`text-[10px] block mt-2 text-right ${
                     msg.role === 'user' ? 'text-blue-200' : 'text-description'

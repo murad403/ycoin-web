@@ -59,7 +59,7 @@ export function useChatSocket(options?: UseChatSocketOptions) {
           if (data.type === 'chat.token') {
             optionsRef.current?.onToken?.(data)
           } else if (data.type === 'chat.completed') {
-            dispatch(baseApi.util.invalidateTags(['Chat']))
+            dispatch(baseApi.util.invalidateTags(['Conversations']))
             optionsRef.current?.onCompleted?.(data)
           } else if (data.type === 'chat.status') {
             const statusText = data.status || data.message || ''
