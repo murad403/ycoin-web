@@ -23,4 +23,3 @@ export const {
     useRetrieveTermsAndConditionsQuery,
 } = legalApi;
 
-export default legalApi;

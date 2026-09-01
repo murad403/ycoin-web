@@ -6,6 +6,7 @@ import { FiSearch, FiPlus, FiBell, FiGrid, FiFileText, FiInfo, FiChevronUp, FiCh
 import { MessageCircle } from 'lucide-react'
 import { removeToken } from '@/lib/auth'
 import { useGetProfileQuery } from '@/redux/features/auth/auth.api'
+import { useRetrieveConversationsListQuery } from '@/redux/features/chat/chat.api'
 import { useLanguage } from '@/i18n/LanguageContext'
 
 interface ChatSidebarProps {
@@ -20,24 +21,20 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
   const pathname = usePathname();
   const router = useRouter();
   const [isChatsOpen, setIsChatsOpen] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { t } = useLanguage();
   const { data: profileData } = useGetProfileQuery();
+  const { data: conversations, isLoading: isConversationsLoading } = useRetrieveConversationsListQuery();
+
+  const filteredConversations = conversations?.filter((chat) =>
+    chat.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const menuItems = [
     { label: t.chat.alerts, icon: FiBell, href: '/alerts' },
     { label: t.chat.discover, icon: FiGrid, href: '/discover' },
     { label: t.chat.termsOfConditions, icon: FiFileText, href: '/terms-of-conditions' },
     { label: t.chat.privacyPolicy, icon: FiInfo, href: '/privacy-policy' },
-  ]
-
-  const chatHistory = [
-    'BTC price for 24h',
-    'Smart money inflow',
-    'ETH price for last 7 days',
-    'The best Pumpfun tokens',
-    'Scan Solana runners',
-    'Track smart money',
-    'Find tokens under 20K MC',
   ]
 
   const handleLogout = async () => {
@@ -84,6 +81,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
             <FiSearch className="w-4 h-4 text-description mr-2 shrink-0" />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.chat.searchPlaceholder}
               className="bg-transparent text-xs text-white placeholder-title focus:outline-none w-full"
             />
@@ -174,17 +173,28 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isCollapsed, onToggleCollapse
           </button>
 
           {isChatsOpen && (
-            <div className="flex flex-col gap-1 pl-4 mt-1">
-              {chatHistory.map((chat, idx) => (
-                <Link
-                  key={idx}
-                  href="/new-chat"
-                  onClick={onCloseMobile}
-                  className="text-description hover:text-white text-[13px] font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none shrink-0"
-                >
-                  {chat}
-                </Link>
-              ))}
+            <div className="flex flex-col gap-1 pl-4 mt-1 overflow-y-auto scrollbar-thin">
+              {isConversationsLoading ? (
+                <div className="text-description text-xs py-2 px-3 animate-pulse">Loading chats...</div>
+              ) : filteredConversations && filteredConversations.length > 0 ? (
+                filteredConversations.map((chat) => {
+                  const isActive = pathname === `/chat/${chat.id}`;
+                  return (
+                    <Link
+                      key={chat.id}
+                      href={`/chat/${chat.id}`}
+                      onClick={onCloseMobile}
+                      className={`text-description hover:text-white text-[13px] font-medium py-1.5 px-3 hover:bg-zinc-900/40 rounded-lg cursor-pointer truncate transition-colors select-none shrink-0 ${isActive ? 'text-white bg-button-color/10 font-semibold border-l-2 border-button-color' : ''
+                        }`}
+                      title={chat.title}
+                    >
+                      {chat.title || 'Untitled Chat'}
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="text-description/60 text-xs py-2 px-3">No conversations found</div>
+              )}
             </div>
           )}
         </div>

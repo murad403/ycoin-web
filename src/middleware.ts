@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const protectedRoutes = [
   '/new-chat',
+  '/chat',
   '/alerts',
   '/discover',
   '/terms-of-conditions',
@@ -36,6 +37,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/new-chat/:path*',
+    '/chat/:path*',
     '/alerts/:path*',
     '/discover/:path*',
     '/terms-of-conditions/:path*',

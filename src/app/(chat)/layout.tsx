@@ -11,12 +11,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   return (
-    <div className="h-screen w-screen bg-black text-white flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-black text-white flex flex-col overflow-hidden no-scrollbar">
       {/* Top Navigation Bar */}
       <ChatTopbar onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
 
       {/* Main Content Area: Sidebar + Chat Window */}
-      <div className="flex flex-1 min-h-0 overflow-hidden relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden relative no-scrollbar">
         {/* Left Sidebar */}
         <ChatSidebar
           isCollapsed={isSidebarCollapsed}
@@ -35,7 +35,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
 
         {/* Dynamic Chat Page View */}
-        <main className="flex-1 flex flex-col bg-black relative overflow-hidden">
+        <main className="flex-1 flex flex-col bg-black relative overflow-hidden no-scrollbar">
           {children}
         </main>
       </div>
