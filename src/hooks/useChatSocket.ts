@@ -12,7 +12,7 @@ interface UseChatSocketOptions {
   onToken?: (data: { conversation_id: string; message_id: string; content: string }) => void
   onCompleted?: (data: { conversation_id: string; message_id: string }) => void
   onError?: (error: string) => void
-  onStatusChange?: (statusMessage: string) => void
+  onStatusChange?: (statusMessage: string) => void;
 }
 
 export function useChatSocket(options?: UseChatSocketOptions) {
